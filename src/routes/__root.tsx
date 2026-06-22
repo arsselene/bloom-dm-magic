@@ -8,7 +8,12 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
+import "@fontsource/noto-naskh-arabic/400.css";
+import "@fontsource/noto-naskh-arabic/600.css";
+import "../lib/i18n";
+import { RTL_LANGS } from "../lib/i18n";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -117,6 +122,14 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const lng = i18n.resolvedLanguage ?? i18n.language ?? "en";
+    const isRTL = RTL_LANGS.has(lng);
+    document.documentElement.lang = lng;
+    document.documentElement.dir = isRTL ? "rtl" : "ltr";
+  }, [i18n.resolvedLanguage, i18n.language]);
 
   return (
     <QueryClientProvider client={queryClient}>
