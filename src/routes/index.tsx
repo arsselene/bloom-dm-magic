@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Instagram, Sparkles, MessageCircle, Heart, Flower2, Palette, Ruler, Truck } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Instagram, Sparkles, MessageCircle, Heart, Flower2, Palette, Ruler, Truck, Languages, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -9,6 +12,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { FLOWERS } from "@/lib/flowers";
+import { getInspoPhotos } from "@/lib/unsplash.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,21 +29,20 @@ export const Route = createFileRoute("/")({
 });
 
 const IG_URL = "https://instagram.com/yourfloristig";
-
 const HERO_IMG = "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=2000&q=80";
 
 const CATALOG = [
-  { ref: "BQT-01", cat: "Birthdays", price: "$65", img: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800&q=80" },
-  { ref: "BQT-02", cat: "Weddings", price: "$220", img: "https://images.unsplash.com/photo-1525772764200-be829a350797?w=800&q=80" },
-  { ref: "BQT-03", cat: "Anniversaries", price: "$120", img: "https://images.unsplash.com/photo-1469259943454-aa100abba749?w=800&q=80" },
-  { ref: "BQT-04", cat: "Birthdays", price: "$45", img: "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=800&q=80" },
-  { ref: "BQT-05", cat: "Weddings", price: "$280", img: "https://images.unsplash.com/photo-1457089328389-f7f7d5786b32?w=800&q=80" },
-  { ref: "BQT-06", cat: "Anniversaries", price: "$95", img: "https://images.unsplash.com/photo-1502209524164-acea936639a2?w=800&q=80" },
-  { ref: "BQT-07", cat: "Birthdays", price: "$80", img: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=800&q=80" },
-  { ref: "BQT-08", cat: "Weddings", price: "$320", img: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=800&q=80" },
+  { ref: "BQT-01", cat: "birthdays", price: "$65", img: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800&q=80" },
+  { ref: "BQT-02", cat: "weddings", price: "$220", img: "https://images.unsplash.com/photo-1525772764200-be829a350797?w=800&q=80" },
+  { ref: "BQT-03", cat: "anniversaries", price: "$120", img: "https://images.unsplash.com/photo-1469259943454-aa100abba749?w=800&q=80" },
+  { ref: "BQT-04", cat: "birthdays", price: "$45", img: "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=800&q=80" },
+  { ref: "BQT-05", cat: "weddings", price: "$280", img: "https://images.unsplash.com/photo-1457089328389-f7f7d5786b32?w=800&q=80" },
+  { ref: "BQT-06", cat: "anniversaries", price: "$95", img: "https://images.unsplash.com/photo-1502209524164-acea936639a2?w=800&q=80" },
+  { ref: "BQT-07", cat: "birthdays", price: "$80", img: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=800&q=80" },
+  { ref: "BQT-08", cat: "weddings", price: "$320", img: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=800&q=80" },
 ];
 
-const CATEGORIES = ["All", "Birthdays", "Anniversaries", "Weddings"] as const;
+const CATEGORIES = ["all", "birthdays", "anniversaries", "weddings"] as const;
 
 const MOODBOARD = [
   { img: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&q=80", h: "h-72" },
@@ -51,9 +55,47 @@ const MOODBOARD = [
   { img: "https://images.unsplash.com/photo-1599733589046-8a35ed0c89ea?w=600&q=80", h: "h-80" },
 ];
 
+const LANGS = [
+  { code: "en", label: "EN" },
+  { code: "fr", label: "FR" },
+  { code: "ar", label: "ع" },
+] as const;
+
+function LangSwitcher() {
+  const { i18n } = useTranslation();
+  const current = (i18n.resolvedLanguage ?? "en").slice(0, 2);
+  return (
+    <div className="inline-flex items-center gap-1 rounded-full bg-white/15 px-1 py-1 text-xs backdrop-blur-sm">
+      <Languages className="ms-1 size-3.5 text-white/90" />
+      {LANGS.map((l) => (
+        <button
+          key={l.code}
+          onClick={() => i18n.changeLanguage(l.code)}
+          className={`rounded-full px-2.5 py-1 transition-colors ${
+            current === l.code ? "bg-white text-foreground" : "text-white/90 hover:text-white"
+          }`}
+          aria-label={l.code}
+        >
+          {l.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function Index() {
-  const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("All");
-  const items = filter === "All" ? CATALOG : CATALOG.filter((i) => i.cat === filter);
+  const { t, i18n } = useTranslation();
+  const lang = ((i18n.resolvedLanguage ?? "en").slice(0, 2) as "en" | "fr" | "ar");
+  const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("all");
+  const items = filter === "all" ? CATALOG : CATALOG.filter((i) => i.cat === filter);
+
+  const fetchInspo = useServerFn(getInspoPhotos);
+  const [inspoPage, setInspoPage] = useState(1);
+  const inspoQuery = useQuery({
+    queryKey: ["inspo", inspoPage],
+    queryFn: () => fetchInspo({ data: { page: inspoPage } }),
+    staleTime: 60_000,
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -64,57 +106,57 @@ function Index() {
             Petal &amp; Stem
           </a>
           <nav className="hidden gap-8 text-sm text-white/90 md:flex">
-            <a href="#process" className="hover:text-white">How to Order</a>
-            <a href="#catalog" className="hover:text-white">Our Work</a>
-            <a href="#pricing" className="hover:text-white">Pricing</a>
-            <a href="#faq" className="hover:text-white">FAQ</a>
+            <a href="#process" className="hover:text-white">{t("nav.process")}</a>
+            <a href="#catalog" className="hover:text-white">{t("nav.catalog")}</a>
+            <a href="#varieties" className="hover:text-white">{t("nav.varieties")}</a>
+            <a href="#inspo" className="hover:text-white">{t("nav.inspo")}</a>
+            <a href="#pricing" className="hover:text-white">{t("nav.pricing")}</a>
           </nav>
+          <LangSwitcher />
         </div>
       </header>
 
       {/* HERO */}
       <section id="top" className="relative flex min-h-[100svh] items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="Floral arrangement of peonies and roses" className="h-full w-full object-cover" />
+          <img src={HERO_IMG} alt="Floral arrangement" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         </div>
         <div className="relative z-10 mx-auto max-w-3xl px-6 text-center text-white">
-          <p className="mb-6 text-xs uppercase tracking-[0.4em] text-white/80">A Boutique Floral Studio</p>
+          <p className="mb-6 text-xs uppercase tracking-[0.4em] text-white/80">{t("hero.eyebrow")}</p>
           <h1 className="font-serif text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
-            Bespoke Blooms,<br />
-            <span className="italic">Crafted for You.</span>
+            {t("hero.title1")}<br />
+            <span className="italic">{t("hero.title2")}</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-base text-white/90 sm:text-lg">
-            Locally sourced, custom-designed floral arrangements. Ordering is as easy as sending a DM.
-          </p>
+          <p className="mx-auto mt-6 max-w-xl text-base text-white/90 sm:text-lg">{t("hero.sub")}</p>
           <div className="mt-10">
             <Button asChild size="lg" className="h-12 rounded-full px-8 text-sm shadow-soft">
               <a href={IG_URL} target="_blank" rel="noopener noreferrer">
                 <Instagram className="size-4" />
-                Order on Instagram
+                {t("hero.cta")}
               </a>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* HOW TO ORDER */}
+      {/* PROCESS */}
       <section id="process" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
         <div className="mb-16 text-center">
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">The Process</p>
-          <h2 className="font-serif text-4xl md:text-5xl">How to order</h2>
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("process.eyebrow")}</p>
+          <h2 className="font-serif text-4xl md:text-5xl">{t("process.title")}</h2>
         </div>
         <div className="grid gap-10 md:grid-cols-3">
           {[
-            { icon: Sparkles, n: "01", t: "Browse & Dream", d: "Find an arrangement in our catalog or gather inspiration from the moodboard below." },
-            { icon: MessageCircle, n: "02", t: "Slide into our DMs", d: "Send us a screenshot, your delivery date, and budget. We'll chat through the details." },
-            { icon: Heart, n: "03", t: "Confirm & Enjoy", d: "We send a secure payment link, then hand-deliver something magical to your door." },
+            { icon: Sparkles, n: "01", t: t("process.s1t"), d: t("process.s1d") },
+            { icon: MessageCircle, n: "02", t: t("process.s2t"), d: t("process.s2d") },
+            { icon: Heart, n: "03", t: t("process.s3t"), d: t("process.s3d") },
           ].map((s) => (
             <div key={s.n} className="text-center">
               <div className="mx-auto mb-6 grid size-16 place-items-center rounded-full bg-secondary text-primary">
                 <s.icon className="size-6" />
               </div>
-              <p className="mb-2 font-serif text-sm italic text-muted-foreground">— Step {s.n} —</p>
+              <p className="mb-2 font-serif text-sm italic text-muted-foreground">— {t("process.step")} {s.n} —</p>
               <h3 className="mb-3 text-2xl">{s.t}</h3>
               <p className="mx-auto max-w-xs text-sm leading-relaxed text-muted-foreground">{s.d}</p>
             </div>
@@ -126,8 +168,8 @@ function Index() {
       <section id="catalog" className="bg-secondary/40 py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 text-center">
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">The Catalog</p>
-            <h2 className="font-serif text-4xl md:text-5xl">Our work</h2>
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("catalog.eyebrow")}</p>
+            <h2 className="font-serif text-4xl md:text-5xl">{t("catalog.title")}</h2>
           </div>
           <div className="mb-10 flex flex-wrap justify-center gap-2">
             {CATEGORIES.map((c) => (
@@ -140,7 +182,7 @@ function Index() {
                     : "border-border bg-background text-foreground hover:border-primary/50"
                 }`}
               >
-                {c}
+                {t(`catalog.${c}`)}
               </button>
             ))}
           </div>
@@ -153,19 +195,15 @@ function Index() {
                 rel="noopener noreferrer"
                 className="group relative block aspect-[3/4] overflow-hidden rounded-md bg-muted"
               >
-                <img
-                  src={i.img}
-                  alt={`Bouquet ${i.ref}`}
-                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
+                <img src={i.img} alt={`Bouquet ${i.ref}`} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
                   <div className="flex items-center justify-between text-xs uppercase tracking-wider">
-                    <span>Ref: #{i.ref}</span>
-                    <span>From {i.price}</span>
+                    <span>{t("catalog.ref")}: #{i.ref}</span>
+                    <span>{t("catalog.from")} {i.price}</span>
                   </div>
                   <p className="mt-2 flex items-center gap-1 text-sm">
-                    <Instagram className="size-3.5" /> DM to order this
+                    <Instagram className="size-3.5" /> {t("catalog.dm")}
                   </p>
                 </div>
               </a>
@@ -177,11 +215,9 @@ function Index() {
       {/* MOODBOARD */}
       <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
         <div className="mb-12 text-center">
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">Moodboard</p>
-          <h2 className="font-serif text-4xl md:text-5xl">Current season inspiration</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-            Not sure what you want? Screenshot any of these vibes and send them to us!
-          </p>
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("moodboard.eyebrow")}</p>
+          <h2 className="font-serif text-4xl md:text-5xl">{t("moodboard.title")}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("moodboard.sub")}</p>
         </div>
         <div className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4">
           {MOODBOARD.map((m, idx) => (
@@ -192,18 +228,89 @@ function Index() {
         </div>
       </section>
 
+      {/* FLOWER VARIETIES (curated dataset) */}
+      <section id="varieties" className="bg-blush/20 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("varieties.eyebrow")}</p>
+            <h2 className="font-serif text-4xl md:text-5xl">{t("varieties.title")}</h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("varieties.sub")}</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-4">
+            {FLOWERS.map((f) => (
+              <Card key={f.slug} className="overflow-hidden border-border/60 bg-background/90 p-0 shadow-none">
+                <div className="aspect-square overflow-hidden">
+                  <img src={f.img} alt={f.names[lang]} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl">{f.names[lang]}</h3>
+                  <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">
+                    {f.names.en} · {f.season}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc[lang]}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* INSPO API (Unsplash) */}
+      <section id="inspo" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <div className="mb-10 text-center">
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("inspo.eyebrow")}</p>
+          <h2 className="font-serif text-4xl md:text-5xl">{t("inspo.title")}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("inspo.sub")}</p>
+          <div className="mt-6">
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                setInspoPage((p) => (p % 5) + 1);
+                void inspoQuery.refetch();
+              }}
+              disabled={inspoQuery.isFetching}
+            >
+              <RefreshCw className={`size-4 ${inspoQuery.isFetching ? "animate-spin" : ""}`} />
+              {t("inspo.refresh")}
+            </Button>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+          {(inspoQuery.data?.photos ?? Array.from({ length: 8 })).map((p, idx) =>
+            p && typeof p === "object" && "url" in p ? (
+              <a
+                key={p.id}
+                href={p.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-[3/4] overflow-hidden rounded-md bg-muted"
+                title={`Photo by ${p.credit}`}
+              >
+                <img src={p.url} alt={p.alt} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <span className="absolute bottom-0 start-0 m-2 rounded bg-black/50 px-2 py-0.5 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  {p.credit}
+                </span>
+              </a>
+            ) : (
+              <div key={idx} className="aspect-[3/4] animate-pulse rounded-md bg-muted" />
+            )
+          )}
+        </div>
+      </section>
+
       {/* CUSTOMIZATION */}
       <section className="bg-blush/30 py-24 md:py-32">
         <div className="mx-auto max-w-6xl px-6">
           <div className="mb-16 text-center">
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">Build Your Own</p>
-            <h2 className="font-serif text-4xl md:text-5xl">Customization guide</h2>
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("custom.eyebrow")}</p>
+            <h2 className="font-serif text-4xl md:text-5xl">{t("custom.title")}</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             <Card className="border-border/60 bg-background/80 p-8 shadow-none">
               <Palette className="mb-5 size-6 text-primary" />
-              <h3 className="mb-2 text-2xl">1. Pick a palette</h3>
-              <p className="mb-6 text-sm text-muted-foreground">Choose the mood that speaks to you.</p>
+              <h3 className="mb-2 text-2xl">{t("custom.c1t")}</h3>
+              <p className="mb-6 text-sm text-muted-foreground">{t("custom.c1d")}</p>
               <div className="space-y-3">
                 {[
                   { n: "Pastels", c: ["#F8D7E3", "#E8D5F2", "#D5E8F2", "#FDE8C9"] },
@@ -224,21 +331,21 @@ function Index() {
             </Card>
             <Card className="border-border/60 bg-background/80 p-8 shadow-none">
               <Flower2 className="mb-5 size-6 text-primary" />
-              <h3 className="mb-2 text-2xl">2. Choose a focal bloom</h3>
-              <p className="mb-6 text-sm text-muted-foreground">The star of your arrangement.</p>
+              <h3 className="mb-2 text-2xl">{t("custom.c2t")}</h3>
+              <p className="mb-6 text-sm text-muted-foreground">{t("custom.c2d")}</p>
               <ul className="space-y-3 text-sm">
-                {["Roses — classic & timeless", "Lilies — fragrant & elegant", "Peonies — lush & romantic", "Ranunculus — soft & layered", "Dahlias — bold & sculptural"].map((b) => (
-                  <li key={b} className="flex items-start gap-2 border-b border-border/50 pb-3 last:border-0">
+                {FLOWERS.slice(0, 5).map((f) => (
+                  <li key={f.slug} className="flex items-start gap-2 border-b border-border/50 pb-3 last:border-0">
                     <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-                    {b}
+                    <span>{f.names[lang]} <span className="text-muted-foreground">— {f.desc[lang]}</span></span>
                   </li>
                 ))}
               </ul>
             </Card>
             <Card className="border-border/60 bg-background/80 p-8 shadow-none">
               <Ruler className="mb-5 size-6 text-primary" />
-              <h3 className="mb-2 text-2xl">3. Select the size</h3>
-              <p className="mb-6 text-sm text-muted-foreground">From dainty to dramatic.</p>
+              <h3 className="mb-2 text-2xl">{t("custom.c3t")}</h3>
+              <p className="mb-6 text-sm text-muted-foreground">{t("custom.c3d")}</p>
               <div className="space-y-4">
                 {[
                   { n: "Small", d: "A sweet, bedside gesture." },
@@ -259,43 +366,41 @@ function Index() {
       {/* PRICING */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 py-24 md:py-32">
         <div className="mb-16 text-center">
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">Size & Pricing</p>
-          <h2 className="font-serif text-4xl md:text-5xl">Find your perfect size</h2>
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("pricing.eyebrow")}</p>
+          <h2 className="font-serif text-4xl md:text-5xl">{t("pricing.title")}</h2>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {[
-            { n: "The Petite", p: "45", d: "Perfect for bedside tables and small, sweet gestures.", feat: ["8–10 stems", "Hand-tied wrap", "Mini card included"], featured: false },
+            { n: "The Petite", p: "45", d: "Perfect for bedside tables and small gestures.", feat: ["8–10 stems", "Hand-tied wrap", "Mini card included"], featured: false },
             { n: "The Classic", p: "120", d: "Our most popular size for birthdays and anniversaries.", feat: ["18–22 stems", "Premium wrap or vase", "Personalized note"], featured: true },
             { n: "The Grand", p: "260", d: "Voluminous and dramatic for major milestones.", feat: ["35+ stems", "Statement vessel", "White-glove delivery"], featured: false },
-          ].map((t) => (
+          ].map((tier) => (
             <Card
-              key={t.n}
-              className={`relative flex flex-col p-8 ${
-                t.featured ? "border-primary bg-secondary/60 shadow-soft md:scale-105" : "border-border/60 shadow-none"
-              }`}
+              key={tier.n}
+              className={`relative flex flex-col p-8 ${tier.featured ? "border-primary bg-secondary/60 shadow-soft md:scale-105" : "border-border/60 shadow-none"}`}
             >
-              {t.featured && (
+              {tier.featured && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs uppercase tracking-wider text-primary-foreground">
-                  Most loved
+                  {t("pricing.most")}
                 </span>
               )}
-              <h3 className="text-3xl">{t.n}</h3>
+              <h3 className="text-3xl">{tier.n}</h3>
               <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-sm text-muted-foreground">from</span>
-                <span className="font-serif text-5xl">${t.p}</span>
+                <span className="text-sm text-muted-foreground">{t("pricing.from")}</span>
+                <span className="font-serif text-5xl">${tier.p}</span>
               </div>
-              <p className="mt-4 text-sm text-muted-foreground">{t.d}</p>
+              <p className="mt-4 text-sm text-muted-foreground">{tier.d}</p>
               <ul className="my-8 space-y-3 text-sm">
-                {t.feat.map((f) => (
+                {tier.feat.map((f) => (
                   <li key={f} className="flex items-center gap-2">
                     <span className="size-1.5 rounded-full bg-primary" />
                     {f}
                   </li>
                 ))}
               </ul>
-              <Button asChild variant={t.featured ? "default" : "outline"} className="mt-auto rounded-full">
+              <Button asChild variant={tier.featured ? "default" : "outline"} className="mt-auto rounded-full">
                 <a href={IG_URL} target="_blank" rel="noopener noreferrer">
-                  <Instagram className="size-4" /> Order on Instagram
+                  <Instagram className="size-4" /> {t("pricing.order")}
                 </a>
               </Button>
             </Card>
@@ -308,24 +413,18 @@ function Index() {
         <div className="mx-auto max-w-3xl px-6">
           <div className="mb-12 text-center">
             <Truck className="mx-auto mb-4 size-6 text-primary" />
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">Delivery & Care</p>
-            <h2 className="font-serif text-4xl md:text-5xl">Frequently asked</h2>
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("faq.eyebrow")}</p>
+            <h2 className="font-serif text-4xl md:text-5xl">{t("faq.title")}</h2>
           </div>
           <Accordion type="single" collapsible className="space-y-2">
             {[
-              { q: "Where do you deliver?", a: "We deliver throughout the metro area and surrounding suburbs (within a 20-mile radius of our studio). For deliveries beyond that, send us a DM and we'll do our best to make it happen." },
-              { q: "How much is delivery?", a: "Local delivery starts at $15 and varies by distance. Free delivery on orders over $150 within our core zones. We'll confirm the exact fee when you order." },
-              { q: "How do I care for my flowers?", a: "Trim the stems at a 45° angle, change the water every two days, and keep your arrangement out of direct sunlight and away from heat sources. We include a care card with every order." },
-              { q: "How far in advance should I order?", a: "For everyday arrangements, 48 hours is ideal. For weddings and large events, please reach out at least 4–6 weeks in advance so we can source the perfect blooms." },
+              { q: "Where do you deliver?", a: "We deliver throughout the metro area and surrounding suburbs (within a 20-mile radius)." },
+              { q: "How much is delivery?", a: "Local delivery starts at $15 and varies by distance. Free delivery on orders over $150." },
+              { q: "How do I care for my flowers?", a: "Trim stems at 45°, change water every two days, keep out of direct sunlight." },
+              { q: "How far in advance should I order?", a: "48 hours for everyday arrangements; 4–6 weeks for weddings and events." },
             ].map((f, i) => (
-              <AccordionItem
-                key={i}
-                value={`item-${i}`}
-                className="rounded-md border border-border/60 bg-background px-5"
-              >
-                <AccordionTrigger className="text-left font-serif text-lg hover:no-underline">
-                  {f.q}
-                </AccordionTrigger>
+              <AccordionItem key={i} value={`item-${i}`} className="rounded-md border border-border/60 bg-background px-5">
+                <AccordionTrigger className="text-left font-serif text-lg hover:no-underline">{f.q}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
               </AccordionItem>
             ))}
@@ -337,22 +436,15 @@ function Index() {
       <footer className="border-t border-border/60 py-16">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <p className="font-serif text-2xl italic">Petal &amp; Stem</p>
-          <p className="mt-2 text-sm text-muted-foreground">A boutique floral studio</p>
+          <p className="mt-2 text-sm text-muted-foreground">{t("footer.tag")}</p>
           <div className="mt-8 flex flex-col items-center gap-3 text-sm">
-            <a
-              href={IG_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-foreground hover:text-primary"
-            >
+            <a href={IG_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-foreground hover:text-primary">
               <Instagram className="size-4" /> @YourFloristIG
             </a>
-            <a href="mailto:hello@petalandstem.co" className="text-muted-foreground hover:text-foreground">
-              hello@petalandstem.co
-            </a>
+            <a href="mailto:hello@petalandstem.co" className="text-muted-foreground hover:text-foreground">hello@petalandstem.co</a>
           </div>
           <p className="mt-10 text-xs text-muted-foreground">
-            Made with <Heart className="inline size-3 text-blush-foreground" fill="currentColor" /> © {new Date().getFullYear()} Petal &amp; Stem
+            {t("footer.madeWith")} <Heart className="inline size-3 text-blush-foreground" fill="currentColor" /> © {new Date().getFullYear()} Petal &amp; Stem
           </p>
         </div>
       </footer>
@@ -362,11 +454,11 @@ function Index() {
         href={IG_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform hover:scale-105"
+        className="fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform hover:scale-105"
       >
         <Instagram className="size-4" />
-        <span className="hidden sm:inline">Message us on IG</span>
-        <span className="sm:hidden">DM us</span>
+        <span className="hidden sm:inline">{t("cta.full")}</span>
+        <span className="sm:hidden">{t("cta.short")}</span>
       </a>
     </div>
   );
