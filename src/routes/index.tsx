@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Instagram, Sparkles, MessageCircle, Heart, Flower2, Palette, Ruler, Truck, Languages, RefreshCw } from "lucide-react";
+import { Instagram, Sparkles, MessageCircle, Heart, Flower2, Palette, Ruler, Truck, Languages, RefreshCw, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -31,6 +31,20 @@ export const Route = createFileRoute("/")({
 const IG_URL = "https://instagram.com/yourfloristig";
 const HERO_IMG = "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=2000&q=80";
 
+type Cat = "all" | "birthdays" | "anniversaries" | "weddings";
+const CATEGORIES: Cat[] = ["all", "birthdays", "anniversaries", "weddings"];
+
+const MOODBOARD: { img: string; h: string; cat: Exclude<Cat, "all"> }[] = [
+  { img: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&q=80", h: "h-72", cat: "birthdays" },
+  { img: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80", h: "h-96", cat: "weddings" },
+  { img: "https://images.unsplash.com/photo-1454262041357-5d96f50a2f27?w=600&q=80", h: "h-64", cat: "anniversaries" },
+  { img: "https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=600&q=80", h: "h-80", cat: "anniversaries" },
+  { img: "https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=600&q=80", h: "h-72", cat: "birthdays" },
+  { img: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=600&q=80", h: "h-96", cat: "weddings" },
+  { img: "https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=600&q=80", h: "h-64", cat: "weddings" },
+  { img: "https://images.unsplash.com/photo-1599733589046-8a35ed0c89ea?w=600&q=80", h: "h-80", cat: "birthdays" },
+];
+
 const CATALOG = [
   { ref: "BQT-01", cat: "birthdays", price: "$65", img: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800&q=80" },
   { ref: "BQT-02", cat: "weddings", price: "$220", img: "https://images.unsplash.com/photo-1525772764200-be829a350797?w=800&q=80" },
@@ -42,18 +56,19 @@ const CATALOG = [
   { ref: "BQT-08", cat: "weddings", price: "$320", img: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=800&q=80" },
 ];
 
-const CATEGORIES = ["all", "birthdays", "anniversaries", "weddings"] as const;
+// Customization presets: each palette + size combo points to an example arrangement image.
+const PALETTES = [
+  { key: "pastel",  swatches: ["#F8D7E3", "#E8D5F2", "#D5E8F2", "#FDE8C9"], img: "https://images.unsplash.com/photo-1457089328389-f7f7d5786b32?w=900&q=80" },
+  { key: "moody",   swatches: ["#3A1F2B", "#5C2A3D", "#8B3A4E", "#241825"], img: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=900&q=80" },
+  { key: "neutral", swatches: ["#F5F0E8", "#D9CFC1", "#B5A992", "#8C7E68"], img: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=900&q=80" },
+  { key: "bright",  swatches: ["#FF6B6B", "#FFB84D", "#FFE066", "#A0E07A"], img: "https://images.unsplash.com/photo-1503936380431-cdfb147ed5dc?w=900&q=80" },
+] as const;
 
-const MOODBOARD = [
-  { img: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&q=80", h: "h-72" },
-  { img: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=600&q=80", h: "h-96" },
-  { img: "https://images.unsplash.com/photo-1454262041357-5d96f50a2f27?w=600&q=80", h: "h-64" },
-  { img: "https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=600&q=80", h: "h-80" },
-  { img: "https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=600&q=80", h: "h-72" },
-  { img: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=600&q=80", h: "h-96" },
-  { img: "https://images.unsplash.com/photo-1567696911980-2eed69a46042?w=600&q=80", h: "h-64" },
-  { img: "https://images.unsplash.com/photo-1599733589046-8a35ed0c89ea?w=600&q=80", h: "h-80" },
-];
+const SIZES = [
+  { key: "small",  stems: "8–10",  img: "https://images.unsplash.com/photo-1455659817273-f96807779a8a?w=900&q=80" },
+  { key: "medium", stems: "18–22", img: "https://images.unsplash.com/photo-1469259943454-aa100abba749?w=900&q=80" },
+  { key: "large",  stems: "35+",   img: "https://images.unsplash.com/photo-1525772764200-be829a350797?w=900&q=80" },
+] as const;
 
 const LANGS = [
   { code: "en", label: "EN" },
@@ -86,9 +101,12 @@ function LangSwitcher() {
 function Index() {
   const { t, i18n } = useTranslation();
   const lang = ((i18n.resolvedLanguage ?? "en").slice(0, 2) as "en" | "fr" | "ar");
-  const [filter, setFilter] = useState<(typeof CATEGORIES)[number]>("all");
-  const items = filter === "all" ? CATALOG : CATALOG.filter((i) => i.cat === filter);
 
+  // Moodboard filter
+  const [moodCat, setMoodCat] = useState<Cat>("all");
+  const moodItems = moodCat === "all" ? MOODBOARD : MOODBOARD.filter((m) => m.cat === moodCat);
+
+  // Unsplash inspo
   const fetchInspo = useServerFn(getInspoPhotos);
   const [inspoPage, setInspoPage] = useState(1);
   const inspoQuery = useQuery({
@@ -96,6 +114,18 @@ function Index() {
     queryFn: () => fetchInspo({ data: { page: inspoPage } }),
     staleTime: 60_000,
   });
+
+  // Customization studio state
+  const [palette, setPalette] = useState<(typeof PALETTES)[number]["key"]>("pastel");
+  const [focal, setFocal] = useState<string>(FLOWERS[0].slug);
+  const [size, setSize] = useState<(typeof SIZES)[number]["key"]>("medium");
+  const paletteObj = useMemo(() => PALETTES.find((p) => p.key === palette)!, [palette]);
+  const focalObj = useMemo(() => FLOWERS.find((f) => f.slug === focal) ?? FLOWERS[0], [focal]);
+  const sizeObj = useMemo(() => SIZES.find((s) => s.key === size)!, [size]);
+
+  // Catalog filter
+  const [filter, setFilter] = useState<Cat>("all");
+  const items = filter === "all" ? CATALOG : CATALOG.filter((i) => i.cat === filter);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -107,9 +137,10 @@ function Index() {
           </a>
           <nav className="hidden gap-8 text-sm text-white/90 md:flex">
             <a href="#process" className="hover:text-white">{t("nav.process")}</a>
+            <a href="#moodboard" className="hover:text-white">{t("nav.inspo")}</a>
+            <a href="#customize" className="hover:text-white">Customize</a>
             <a href="#catalog" className="hover:text-white">{t("nav.catalog")}</a>
-            <a href="#varieties" className="hover:text-white">{t("nav.varieties")}</a>
-            <a href="#inspo" className="hover:text-white">{t("nav.inspo")}</a>
+            <Link to="/for-you" className="hover:text-white">{t("nav.foryou")}</Link>
             <a href="#pricing" className="hover:text-white">{t("nav.pricing")}</a>
           </nav>
           <LangSwitcher />
@@ -164,8 +195,205 @@ function Index() {
         </div>
       </section>
 
-      {/* CATALOG */}
-      <section id="catalog" className="bg-secondary/40 py-24 md:py-32">
+      {/* 1. MOODBOARD / INSPIRATION (with category filter) */}
+      <section id="moodboard" className="bg-secondary/40 py-24 md:py-32">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 text-center">
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("moodboard.eyebrow")}</p>
+            <h2 className="font-serif text-4xl md:text-5xl">{t("moodboard.title")}</h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("moodboard.sub")}</p>
+          </div>
+          <div className="mb-10 flex flex-wrap justify-center gap-2">
+            {CATEGORIES.map((c) => (
+              <button
+                key={c}
+                onClick={() => setMoodCat(c)}
+                className={`rounded-full border px-5 py-2 text-sm transition-colors ${
+                  moodCat === c
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground hover:border-primary/50"
+                }`}
+              >
+                {t(`moodboard.${c}`)}
+              </button>
+            ))}
+          </div>
+          <div className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4">
+            {moodItems.map((m, idx) => (
+              <div key={`${m.img}-${idx}`} className={`${m.h} overflow-hidden rounded-md break-inside-avoid`}>
+                <img src={m.img} alt="Floral inspiration" className="h-full w-full object-cover" loading="lazy" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 2. MORE INSPO (Unsplash API) */}
+      <section id="inspo" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <div className="mb-10 text-center">
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("inspo.eyebrow")}</p>
+          <h2 className="font-serif text-4xl md:text-5xl">{t("inspo.title")}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("inspo.sub")}</p>
+          <div className="mt-6">
+            <Button
+              variant="outline"
+              className="rounded-full"
+              onClick={() => {
+                setInspoPage((p) => (p % 5) + 1);
+                void inspoQuery.refetch();
+              }}
+              disabled={inspoQuery.isFetching}
+            >
+              <RefreshCw className={`size-4 ${inspoQuery.isFetching ? "animate-spin" : ""}`} />
+              {t("inspo.refresh")}
+            </Button>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+          {(inspoQuery.data?.photos ?? Array.from({ length: 8 })).map((p, idx) =>
+            p && typeof p === "object" && "url" in p ? (
+              <a
+                key={p.id}
+                href={p.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-[3/4] overflow-hidden rounded-md bg-muted"
+                title={`Photo by ${p.credit}`}
+              >
+                <img src={p.url} alt={p.alt} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <span className="absolute bottom-0 start-0 m-2 rounded bg-black/50 px-2 py-0.5 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  {p.credit}
+                </span>
+              </a>
+            ) : (
+              <div key={idx} className="aspect-[3/4] animate-pulse rounded-md bg-muted" />
+            )
+          )}
+        </div>
+      </section>
+
+      {/* 3. CUSTOMIZE — interactive preview */}
+      <section id="customize" className="bg-blush/30 py-24 md:py-32">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-12 text-center">
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("custom.eyebrow")}</p>
+            <h2 className="font-serif text-4xl md:text-5xl">{t("custom.title")}</h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("custom.sub")}</p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-5">
+            {/* Preview */}
+            <div className="md:col-span-2">
+              <Card className="sticky top-6 overflow-hidden border-border/60 bg-background p-0 shadow-soft">
+                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+                  {/* Layered preview: palette base image + focal flower thumbnail overlay */}
+                  <img src={paletteObj.img} alt="Palette preview" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500" />
+                  <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 text-white">
+                    <img src={focalObj.img} alt={focalObj.names[lang]} className="size-16 rounded-full border-2 border-white object-cover shadow-soft" />
+                    <div className="flex-1">
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-white/80">{t("custom.preview")}</p>
+                      <p className="font-serif text-lg leading-tight">
+                        {t(`custom.p${palette.charAt(0).toUpperCase()}${palette.slice(1)}`)} · {focalObj.names[lang]}
+                      </p>
+                      <p className="text-xs text-white/85">{t(`custom.${size}`)} · {sizeObj.stems} stems</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <Button asChild className="w-full rounded-full">
+                    <a href={IG_URL} target="_blank" rel="noopener noreferrer">
+                      <Instagram className="size-4" /> {t("custom.order")}
+                    </a>
+                  </Button>
+                </div>
+              </Card>
+            </div>
+
+            {/* Controls */}
+            <div className="space-y-6 md:col-span-3">
+              {/* Palette */}
+              <Card className="border-border/60 bg-background/90 p-6 shadow-none">
+                <div className="mb-4 flex items-center gap-2">
+                  <Palette className="size-5 text-primary" />
+                  <h3 className="font-serif text-xl">{t("custom.palette")}</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {PALETTES.map((p) => (
+                    <button
+                      key={p.key}
+                      onClick={() => setPalette(p.key)}
+                      className={`rounded-lg border p-3 text-start transition-all ${
+                        palette === p.key ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="mb-2 flex gap-1">
+                        {p.swatches.map((c) => (
+                          <span key={c} className="size-5 rounded-full border border-border/50" style={{ background: c }} />
+                        ))}
+                      </div>
+                      <p className="text-sm">{t(`custom.p${p.key.charAt(0).toUpperCase()}${p.key.slice(1)}`)}</p>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Focal flower */}
+              <Card className="border-border/60 bg-background/90 p-6 shadow-none">
+                <div className="mb-4 flex items-center gap-2">
+                  <Flower2 className="size-5 text-primary" />
+                  <h3 className="font-serif text-xl">{t("custom.focal")}</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+                  {FLOWERS.slice(0, 6).map((f) => (
+                    <button
+                      key={f.slug}
+                      onClick={() => setFocal(f.slug)}
+                      className={`group overflow-hidden rounded-lg border text-start transition-all ${
+                        focal === f.slug ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="aspect-square overflow-hidden">
+                        <img src={f.img} alt={f.names[lang]} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                      </div>
+                      <p className="px-2 py-1.5 text-xs">{f.names[lang]}</p>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Size */}
+              <Card className="border-border/60 bg-background/90 p-6 shadow-none">
+                <div className="mb-4 flex items-center gap-2">
+                  <Ruler className="size-5 text-primary" />
+                  <h3 className="font-serif text-xl">{t("custom.size")}</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {SIZES.map((s) => (
+                    <button
+                      key={s.key}
+                      onClick={() => setSize(s.key)}
+                      className={`overflow-hidden rounded-lg border text-start transition-all ${
+                        size === s.key ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="aspect-[4/3] overflow-hidden">
+                        <img src={s.img} alt={s.key} className="h-full w-full object-cover" loading="lazy" />
+                      </div>
+                      <div className="p-2">
+                        <p className="text-sm font-medium">{t(`custom.${s.key}`)}</p>
+                        <p className="text-xs text-muted-foreground">{s.stems} · {t(`custom.${s.key}D`)}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. OUR WORK (catalog) — last */}
+      <section id="catalog" className="py-24 md:py-32">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 text-center">
             <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("catalog.eyebrow")}</p>
@@ -212,153 +440,18 @@ function Index() {
         </div>
       </section>
 
-      {/* MOODBOARD */}
-      <section className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="mb-12 text-center">
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("moodboard.eyebrow")}</p>
-          <h2 className="font-serif text-4xl md:text-5xl">{t("moodboard.title")}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("moodboard.sub")}</p>
-        </div>
-        <div className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4">
-          {MOODBOARD.map((m, idx) => (
-            <div key={idx} className={`${m.h} overflow-hidden rounded-md break-inside-avoid`}>
-              <img src={m.img} alt="Floral inspiration" className="h-full w-full object-cover" />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FLOWER VARIETIES (curated dataset) */}
-      <section id="varieties" className="bg-blush/20 py-24 md:py-32">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-12 text-center">
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("varieties.eyebrow")}</p>
-            <h2 className="font-serif text-4xl md:text-5xl">{t("varieties.title")}</h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("varieties.sub")}</p>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-4">
-            {FLOWERS.map((f) => (
-              <Card key={f.slug} className="overflow-hidden border-border/60 bg-background/90 p-0 shadow-none">
-                <div className="aspect-square overflow-hidden">
-                  <img src={f.img} alt={f.names[lang]} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-xl">{f.names[lang]}</h3>
-                  <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">
-                    {f.names.en} · {f.season}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc[lang]}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* INSPO API (Unsplash) */}
-      <section id="inspo" className="mx-auto max-w-7xl px-6 py-24 md:py-32">
-        <div className="mb-10 text-center">
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("inspo.eyebrow")}</p>
-          <h2 className="font-serif text-4xl md:text-5xl">{t("inspo.title")}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("inspo.sub")}</p>
-          <div className="mt-6">
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => {
-                setInspoPage((p) => (p % 5) + 1);
-                void inspoQuery.refetch();
-              }}
-              disabled={inspoQuery.isFetching}
-            >
-              <RefreshCw className={`size-4 ${inspoQuery.isFetching ? "animate-spin" : ""}`} />
-              {t("inspo.refresh")}
+      {/* 5. FOR YOU teaser → /for-you page */}
+      <section className="bg-blush/20 py-20">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("foryou.eyebrow")}</p>
+          <h2 className="font-serif text-4xl md:text-5xl">{t("foryou.title")}</h2>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("foryou.ctaSub")}</p>
+          <div className="mt-8">
+            <Button asChild size="lg" className="rounded-full">
+              <Link to="/for-you">
+                {t("foryou.cta")} <ArrowRight className="size-4 rtl:rotate-180" />
+              </Link>
             </Button>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-          {(inspoQuery.data?.photos ?? Array.from({ length: 8 })).map((p, idx) =>
-            p && typeof p === "object" && "url" in p ? (
-              <a
-                key={p.id}
-                href={p.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative block aspect-[3/4] overflow-hidden rounded-md bg-muted"
-                title={`Photo by ${p.credit}`}
-              >
-                <img src={p.url} alt={p.alt} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                <span className="absolute bottom-0 start-0 m-2 rounded bg-black/50 px-2 py-0.5 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  {p.credit}
-                </span>
-              </a>
-            ) : (
-              <div key={idx} className="aspect-[3/4] animate-pulse rounded-md bg-muted" />
-            )
-          )}
-        </div>
-      </section>
-
-      {/* CUSTOMIZATION */}
-      <section className="bg-blush/30 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-16 text-center">
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("custom.eyebrow")}</p>
-            <h2 className="font-serif text-4xl md:text-5xl">{t("custom.title")}</h2>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="border-border/60 bg-background/80 p-8 shadow-none">
-              <Palette className="mb-5 size-6 text-primary" />
-              <h3 className="mb-2 text-2xl">{t("custom.c1t")}</h3>
-              <p className="mb-6 text-sm text-muted-foreground">{t("custom.c1d")}</p>
-              <div className="space-y-3">
-                {[
-                  { n: "Pastels", c: ["#F8D7E3", "#E8D5F2", "#D5E8F2", "#FDE8C9"] },
-                  { n: "Moody", c: ["#3A1F2B", "#5C2A3D", "#8B3A4E", "#241825"] },
-                  { n: "Neutrals", c: ["#F5F0E8", "#D9CFC1", "#B5A992", "#8C7E68"] },
-                  { n: "Brights", c: ["#FF6B6B", "#FFB84D", "#FFE066", "#A0E07A"] },
-                ].map((p) => (
-                  <div key={p.n} className="flex items-center justify-between">
-                    <span className="text-sm">{p.n}</span>
-                    <div className="flex gap-1">
-                      {p.c.map((color) => (
-                        <span key={color} className="size-5 rounded-full border border-border" style={{ background: color }} />
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            <Card className="border-border/60 bg-background/80 p-8 shadow-none">
-              <Flower2 className="mb-5 size-6 text-primary" />
-              <h3 className="mb-2 text-2xl">{t("custom.c2t")}</h3>
-              <p className="mb-6 text-sm text-muted-foreground">{t("custom.c2d")}</p>
-              <ul className="space-y-3 text-sm">
-                {FLOWERS.slice(0, 5).map((f) => (
-                  <li key={f.slug} className="flex items-start gap-2 border-b border-border/50 pb-3 last:border-0">
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-                    <span>{f.names[lang]} <span className="text-muted-foreground">— {f.desc[lang]}</span></span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            <Card className="border-border/60 bg-background/80 p-8 shadow-none">
-              <Ruler className="mb-5 size-6 text-primary" />
-              <h3 className="mb-2 text-2xl">{t("custom.c3t")}</h3>
-              <p className="mb-6 text-sm text-muted-foreground">{t("custom.c3d")}</p>
-              <div className="space-y-4">
-                {[
-                  { n: "Small", d: "A sweet, bedside gesture." },
-                  { n: "Medium", d: "Our most-loved option." },
-                  { n: "Showstopper", d: "Voluminous and grand." },
-                ].map((s) => (
-                  <div key={s.n}>
-                    <p className="text-sm font-medium">{s.n}</p>
-                    <p className="text-sm text-muted-foreground">{s.d}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
           </div>
         </div>
       </section>
