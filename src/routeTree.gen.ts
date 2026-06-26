@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as GalleryRouteImport } from './routes/gallery'
-import { Route as ForYouRouteImport } from './routes/for-you'
 import { Route as FlowersRouteImport } from './routes/flowers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,11 +17,6 @@ import { Route as IndexRouteImport } from './routes/index'
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForYouRoute = ForYouRouteImport.update({
-  id: '/for-you',
-  path: '/for-you',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FlowersRoute = FlowersRouteImport.update({
@@ -45,14 +39,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/flowers': typeof FlowersRoute
-  '/for-you': typeof ForYouRoute
   '/gallery': typeof GalleryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/flowers': typeof FlowersRoute
-  '/for-you': typeof ForYouRoute
   '/gallery': typeof GalleryRoute
 }
 export interface FileRoutesById {
@@ -60,22 +52,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/contact': typeof ContactRoute
   '/flowers': typeof FlowersRoute
-  '/for-you': typeof ForYouRoute
   '/gallery': typeof GalleryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact' | '/flowers' | '/for-you' | '/gallery'
+  fullPaths: '/' | '/contact' | '/flowers' | '/gallery'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact' | '/flowers' | '/for-you' | '/gallery'
-  id: '__root__' | '/' | '/contact' | '/flowers' | '/for-you' | '/gallery'
+  to: '/' | '/contact' | '/flowers' | '/gallery'
+  id: '__root__' | '/' | '/contact' | '/flowers' | '/gallery'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactRoute: typeof ContactRoute
   FlowersRoute: typeof FlowersRoute
-  ForYouRoute: typeof ForYouRoute
   GalleryRoute: typeof GalleryRoute
 }
 
@@ -86,13 +76,6 @@ declare module '@tanstack/react-router' {
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/for-you': {
-      id: '/for-you'
-      path: '/for-you'
-      fullPath: '/for-you'
-      preLoaderRoute: typeof ForYouRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/flowers': {
@@ -123,7 +106,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactRoute: ContactRoute,
   FlowersRoute: FlowersRoute,
-  ForYouRoute: ForYouRoute,
   GalleryRoute: GalleryRoute,
 }
 export const routeTree = rootRouteImport
