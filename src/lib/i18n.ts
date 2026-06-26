@@ -5,7 +5,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 const resources = {
   en: {
     translation: {
-      nav: { process: "How to Order", catalog: "Our Work", foryou: "For You", inspo: "Inspiration", pricing: "Pricing", faq: "FAQ" },
+      nav: { home: "Home", flowers: "Flowers", gallery: "Gallery", contact: "Contact", dm: "DM us", process: "How to Order", catalog: "Our Work", foryou: "For You", inspo: "Inspiration", pricing: "Pricing", faq: "FAQ" },
       hero: {
         eyebrow: "A Boutique Floral Studio",
         title1: "Bespoke Blooms,",
