@@ -5,7 +5,7 @@ import LanguageDetector from "i18next-browser-languagedetector";
 const resources = {
   en: {
     translation: {
-      nav: { process: "How to Order", catalog: "Our Work", foryou: "For You", inspo: "Inspiration", pricing: "Pricing", faq: "FAQ" },
+      nav: { home: "Home", flowers: "Flowers", gallery: "Gallery", contact: "Contact", dm: "DM us", process: "How to Order", catalog: "Our Work", foryou: "For You", inspo: "Inspiration", pricing: "Pricing", faq: "FAQ" },
       hero: {
         eyebrow: "A Boutique Floral Studio",
         title1: "Bespoke Blooms,",
@@ -44,13 +44,15 @@ const resources = {
       },
       pricing: { eyebrow: "Size & Pricing", title: "Find your perfect size", from: "from", most: "Most loved", order: "Order on Instagram" },
       faq: { eyebrow: "Delivery & Care", title: "Frequently asked" },
-      footer: { tag: "A boutique floral studio", madeWith: "Made with" },
+      footer: { tag: "A boutique floral studio", madeWith: "Made with", explore: "Explore", reach: "Reach us" },
+      contact: { eyebrow: "Get in touch", title: "Let's create something beautiful", sub: "We answer DMs within a few hours, every day. Tell us your vision, occasion and budget — we'll take care of the rest.", cta: "Message us on Instagram", email: "Or email us", hours: "Studio hours", hoursVal: "Tue – Sat · 10am – 6pm" },
+      flowersPage: { eyebrow: "Satin & Silk", title: "Our flower models", sub: "Browse every bloom we work with — fresh or as lasting satin and silk versions. Tap any to DM us about it." },
       cta: { full: "Message us on IG", short: "DM us" },
     },
   },
   fr: {
     translation: {
-      nav: { process: "Comment commander", catalog: "Nos créations", foryou: "Pour vous", inspo: "Inspiration", pricing: "Tarifs", faq: "FAQ" },
+      nav: { home: "Accueil", flowers: "Fleurs", gallery: "Galerie", contact: "Contact", dm: "DM", process: "Comment commander", catalog: "Nos créations", foryou: "Pour vous", inspo: "Inspiration", pricing: "Tarifs", faq: "FAQ" },
       hero: {
         eyebrow: "Un studio floral boutique",
         title1: "Bouquets sur mesure,",
@@ -89,13 +91,15 @@ const resources = {
       },
       pricing: { eyebrow: "Tailles & tarifs", title: "Trouvez la taille idéale", from: "dès", most: "Le plus aimé", order: "Commander sur Instagram" },
       faq: { eyebrow: "Livraison & entretien", title: "Questions fréquentes" },
-      footer: { tag: "Un studio floral boutique", madeWith: "Fait avec" },
+      footer: { tag: "Un studio floral boutique", madeWith: "Fait avec", explore: "Explorer", reach: "Nous joindre" },
+      contact: { eyebrow: "Contact", title: "Créons quelque chose de beau", sub: "Nous répondons aux DM en quelques heures, tous les jours. Dites-nous votre vision, l'occasion et votre budget.", cta: "Écrivez-nous sur Instagram", email: "Ou par email", hours: "Horaires du studio", hoursVal: "Mar – Sam · 10h – 18h" },
+      flowersPage: { eyebrow: "Satin & soie", title: "Nos modèles de fleurs", sub: "Découvrez chaque fleur, fraîche ou en version satin/soie durable. Cliquez pour nous écrire en DM." },
       cta: { full: "Écrivez-nous sur IG", short: "DM" },
     },
   },
   ar: {
     translation: {
-      nav: { process: "كيفية الطلب", catalog: "أعمالنا", foryou: "لك", inspo: "إلهام", pricing: "الأسعار", faq: "الأسئلة" },
+      nav: { home: "الرئيسية", flowers: "الزهور", gallery: "المعرض", contact: "تواصل", dm: "راسلنا", process: "كيفية الطلب", catalog: "أعمالنا", foryou: "لك", inspo: "إلهام", pricing: "الأسعار", faq: "الأسئلة" },
       hero: {
         eyebrow: "استوديو زهور بوتيكي",
         title1: "باقات مُصممة خصيصاً",
@@ -134,7 +138,9 @@ const resources = {
       },
       pricing: { eyebrow: "الأحجام والأسعار", title: "اعثر على الحجم المثالي", from: "ابتداءً من", most: "الأكثر محبة", order: "اطلب عبر إنستغرام" },
       faq: { eyebrow: "التوصيل والعناية", title: "الأسئلة الشائعة" },
-      footer: { tag: "استوديو زهور بوتيكي", madeWith: "صُنع بـ" },
+      footer: { tag: "استوديو زهور بوتيكي", madeWith: "صُنع بـ", explore: "استكشف", reach: "تواصل معنا" },
+      contact: { eyebrow: "تواصل", title: "لنصنع شيئاً جميلاً", sub: "نرد على رسائل إنستغرام خلال ساعات قليلة يومياً. أخبرنا برؤيتك والمناسبة وميزانيتك.", cta: "راسلنا على إنستغرام", email: "أو عبر البريد", hours: "ساعات الاستوديو", hoursVal: "الثلاثاء – السبت · 10ص – 6م" },
+      flowersPage: { eyebrow: "ساتان وحرير", title: "نماذج زهورنا", sub: "تصفح كل زهرة نعمل بها، طازجة أو بنسخة ساتان وحرير دائمة. اضغط لمراسلتنا." },
       cta: { full: "راسلنا على إنستغرام", short: "راسلنا" },
     },
   },

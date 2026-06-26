@@ -9,12 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ForYouRouteImport } from './routes/for-you'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as FlowersRouteImport } from './routes/flowers'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as IndexRouteImport } from './routes/index'
 
-const ForYouRoute = ForYouRouteImport.update({
-  id: '/for-you',
-  path: '/for-you',
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlowersRoute = FlowersRouteImport.update({
+  id: '/flowers',
+  path: '/flowers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +37,59 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/for-you': typeof ForYouRoute
+  '/contact': typeof ContactRoute
+  '/flowers': typeof FlowersRoute
+  '/gallery': typeof GalleryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/for-you': typeof ForYouRoute
+  '/contact': typeof ContactRoute
+  '/flowers': typeof FlowersRoute
+  '/gallery': typeof GalleryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/for-you': typeof ForYouRoute
+  '/contact': typeof ContactRoute
+  '/flowers': typeof FlowersRoute
+  '/gallery': typeof GalleryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/for-you'
+  fullPaths: '/' | '/contact' | '/flowers' | '/gallery'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/for-you'
-  id: '__root__' | '/' | '/for-you'
+  to: '/' | '/contact' | '/flowers' | '/gallery'
+  id: '__root__' | '/' | '/contact' | '/flowers' | '/gallery'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ForYouRoute: typeof ForYouRoute
+  ContactRoute: typeof ContactRoute
+  FlowersRoute: typeof FlowersRoute
+  GalleryRoute: typeof GalleryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/for-you': {
-      id: '/for-you'
-      path: '/for-you'
-      fullPath: '/for-you'
-      preLoaderRoute: typeof ForYouRouteImport
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flowers': {
+      id: '/flowers'
+      path: '/flowers'
+      fullPath: '/flowers'
+      preLoaderRoute: typeof FlowersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ForYouRoute: ForYouRoute,
+  ContactRoute: ContactRoute,
+  FlowersRoute: FlowersRoute,
+  GalleryRoute: GalleryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
