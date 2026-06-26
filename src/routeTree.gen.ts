@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ForYouRouteImport } from './routes/for-you'
 import { Route as FlowersRouteImport } from './routes/flowers'
 import { Route as IndexRouteImport } from './routes/index'
 
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ForYouRoute = ForYouRouteImport.update({
   id: '/for-you',
   path: '/for-you',
@@ -33,34 +39,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/flowers': typeof FlowersRoute
   '/for-you': typeof ForYouRoute
+  '/gallery': typeof GalleryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/flowers': typeof FlowersRoute
   '/for-you': typeof ForYouRoute
+  '/gallery': typeof GalleryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/flowers': typeof FlowersRoute
   '/for-you': typeof ForYouRoute
+  '/gallery': typeof GalleryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/flowers' | '/for-you'
+  fullPaths: '/' | '/flowers' | '/for-you' | '/gallery'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/flowers' | '/for-you'
-  id: '__root__' | '/' | '/flowers' | '/for-you'
+  to: '/' | '/flowers' | '/for-you' | '/gallery'
+  id: '__root__' | '/' | '/flowers' | '/for-you' | '/gallery'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FlowersRoute: typeof FlowersRoute
   ForYouRoute: typeof ForYouRoute
+  GalleryRoute: typeof GalleryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/for-you': {
       id: '/for-you'
       path: '/for-you'
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FlowersRoute: FlowersRoute,
   ForYouRoute: ForYouRoute,
+  GalleryRoute: GalleryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
