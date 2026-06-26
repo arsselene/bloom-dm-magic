@@ -99,7 +99,7 @@ const resources = {
   },
   ar: {
     translation: {
-      nav: { process: "كيفية الطلب", catalog: "أعمالنا", foryou: "لك", inspo: "إلهام", pricing: "الأسعار", faq: "الأسئلة" },
+      nav: { home: "الرئيسية", flowers: "الزهور", gallery: "المعرض", contact: "تواصل", dm: "راسلنا", process: "كيفية الطلب", catalog: "أعمالنا", foryou: "لك", inspo: "إلهام", pricing: "الأسعار", faq: "الأسئلة" },
       hero: {
         eyebrow: "استوديو زهور بوتيكي",
         title1: "باقات مُصممة خصيصاً",
