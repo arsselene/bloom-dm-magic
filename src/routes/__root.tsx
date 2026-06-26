@@ -141,8 +141,24 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
+        <SiteNav />
+        <main className="flex-1">
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </main>
+        <SiteFooter />
+      </div>
+      <a
+        href={IG_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-5 end-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-primary-foreground shadow-soft transition-transform hover:scale-105"
+        aria-label="Message us on Instagram"
+      >
+        <Instagram className="size-4" />
+        <span className="hidden sm:inline">DM us on IG</span>
+      </a>
     </QueryClientProvider>
   );
 }
