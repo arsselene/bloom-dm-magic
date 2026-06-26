@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Instagram } from "lucide-react";
 
 import "@fontsource/noto-naskh-arabic/400.css";
 import "@fontsource/noto-naskh-arabic/600.css";
@@ -16,6 +17,9 @@ import "../lib/i18n";
 import { RTL_LANGS } from "../lib/i18n";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SiteNav } from "../components/SiteNav";
+import { SiteFooter } from "../components/SiteFooter";
+import { IG_URL } from "../lib/site-data";
 
 function NotFoundComponent() {
   return (
