@@ -52,7 +52,7 @@ const resources = {
   },
   fr: {
     translation: {
-      nav: { process: "Comment commander", catalog: "Nos créations", foryou: "Pour vous", inspo: "Inspiration", pricing: "Tarifs", faq: "FAQ" },
+      nav: { home: "Accueil", flowers: "Fleurs", gallery: "Galerie", contact: "Contact", dm: "DM", process: "Comment commander", catalog: "Nos créations", foryou: "Pour vous", inspo: "Inspiration", pricing: "Tarifs", faq: "FAQ" },
       hero: {
         eyebrow: "Un studio floral boutique",
         title1: "Bouquets sur mesure,",
