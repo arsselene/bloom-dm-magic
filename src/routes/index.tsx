@@ -32,7 +32,7 @@ function Index() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative -mt-[72px] flex min-h-[100svh] items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[80svh] items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={HERO_IMG} alt="Floral arrangement" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50" />
