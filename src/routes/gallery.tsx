@@ -141,24 +141,30 @@ function GalleryPage() {
             </button>
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-4">
           {items.map((i) => (
             <a
               key={i.ref}
               href={IG_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative block aspect-[3/4] overflow-hidden rounded-md bg-muted"
+              className="group block overflow-hidden rounded-md border border-border/70 bg-background shadow-none transition-shadow hover:shadow-soft"
             >
-              <img src={i.img} alt={`Bouquet ${i.ref}`} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                <div className="flex items-center justify-between text-xs uppercase tracking-wider">
-                  <span>{t("catalog.ref")}: #{i.ref}</span>
+              <div className="aspect-square overflow-hidden bg-white">
+                <img
+                  src={i.img}
+                  alt={`Bouquet ${i.ref}`}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+              <div className="border-t border-border/60 p-3">
+                <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  <span>{t("catalog.ref")} #{i.ref}</span>
                   <span>{t("catalog.from")} {i.price}</span>
                 </div>
-                <p className="mt-2 flex items-center gap-1 text-sm">
-                  <Instagram className="size-3.5" /> {t("catalog.dm")}
+                <p className="mt-1.5 flex items-center gap-1 text-xs text-foreground/80">
+                  <Instagram className="size-3" /> {t("catalog.dm")}
                 </p>
               </div>
             </a>
