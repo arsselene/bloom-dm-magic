@@ -14,15 +14,16 @@ import { IG_URL } from "@/lib/site-data";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Petal & Stem — Bespoke Floral Studio" },
+      { title: "Moon Bloom — Bespoke Floral Studio" },
       { name: "description", content: "Bespoke blooms, crafted for you. Locally sourced floral arrangements, ordered easily via Instagram DM." },
-      { property: "og:title", content: "Petal & Stem — Bespoke Floral Studio" },
+      { property: "og:title", content: "Moon Bloom — Bespoke Floral Studio" },
       { property: "og:description", content: "Bespoke blooms, crafted for you. Order on Instagram." },
       { property: "og:image", content: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&q=80" },
     ],
   }),
   component: Index,
 });
+
 
 const HERO_IMG = "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=2000&q=80";
 
