@@ -17,15 +17,16 @@ const flowersQuery = queryOptions({
 export const Route = createFileRoute("/flowers")({
   head: () => ({
     meta: [
-      { title: "Flowers — Satin & Silk Models | Petal & Stem" },
+      { title: "Flowers — Satin & Silk Models | Moon Bloom" },
       { name: "description", content: "Every flower variety we work with — fresh, satin and silk models." },
-      { property: "og:title", content: "Flowers — Petal & Stem" },
+      { property: "og:title", content: "Flowers — Moon Bloom" },
       { property: "og:description", content: "Browse our full flower library and build your custom bouquet." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(flowersQuery),
   component: FlowersPage,
 });
+
 
 const MODELS = [
   {
@@ -78,7 +79,7 @@ function FlowersPage() {
   const modelObj = useMemo(() => MODELS.find((m) => m.key === model)!, [model]);
   const colorObj = useMemo(() => COLORS.find((c) => c.key === color)!, [color]);
 
-  const orderText = `Hi Petal & Stem! 🌸\n\nI'd like to place a custom order:\n• Flower model: ${modelObj.label}\n• Quantity: ${qty} stems\n• Color: ${colorObj.label}\n\nCould you share pricing and lead time? Thank you!`;
+  const orderText = `Hi Moon Bloom! 🌸\n\nI'd like to place a custom order:\n• Flower model: ${modelObj.label}\n• Quantity: ${qty} stems\n• Color: ${colorObj.label}\n\nCould you share pricing and lead time? Thank you!`;
 
   async function handleGenerate() {
     try {

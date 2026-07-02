@@ -8,9 +8,9 @@ import { IG_URL } from "@/lib/site-data";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Petal & Stem" },
-      { name: "description", content: "DM us on Instagram or email hello@petalandstem.co to start your custom bouquet." },
-      { property: "og:title", content: "Contact — Petal & Stem" },
+      { title: "Contact — Moon Bloom" },
+      { name: "description", content: "DM us on Instagram or email hello@moonbloom.co to start your custom bouquet." },
+      { property: "og:title", content: "Contact — Moon Bloom" },
       { property: "og:description", content: "Let's create something beautiful together." },
     ],
   }),
@@ -49,8 +49,8 @@ function ContactPage() {
           <Card className="border-border/60 bg-background p-8 text-center shadow-none">
             <Mail className="mx-auto size-6 text-primary" />
             <h3 className="mt-4 font-serif text-xl">{t("contact.email")}</h3>
-            <a href="mailto:hello@petalandstem.co" className="mt-2 inline-block text-sm text-muted-foreground hover:text-primary">
-              hello@petalandstem.co
+            <a href="mailto:hello@moonbloom.co" className="mt-2 inline-block text-sm text-muted-foreground hover:text-primary">
+              hello@moonbloom.co
             </a>
           </Card>
           <Card className="border-border/60 bg-background p-8 text-center shadow-none">
@@ -63,3 +63,4 @@ function ContactPage() {
     </div>
   );
 }
+

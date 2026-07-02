@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Languages, Menu, X, Instagram, Search, User, ChevronDown } from "lucide-react";
+import { Languages, Menu, X, Instagram, User, ChevronDown } from "lucide-react";
 import { IG_URL } from "@/lib/site-data";
+
 
 const LANGS = [
   { code: "en", label: "EN" },
@@ -186,20 +187,11 @@ export function SiteNav() {
       <div className="border-b border-border/60 bg-background">
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4 md:gap-8">
           <Link to="/" className="shrink-0 font-serif text-2xl italic">
-            Petal &amp; Stem
+            Moon Bloom
           </Link>
 
-          {/* Search */}
-          <div className="relative hidden flex-1 md:block">
-            <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Search flowers, colors, occasions…"
-              className="h-10 w-full rounded-full border border-border bg-secondary/40 ps-10 pe-4 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:bg-background"
-            />
-          </div>
-
           <div className="ms-auto flex items-center gap-3">
+
             <div className="hidden md:block"><LangSwitcher /></div>
             <a
               href={IG_URL}
@@ -272,15 +264,8 @@ export function SiteNav() {
       {open && (
         <div className="border-t border-border/60 bg-background md:hidden">
           <div className="mx-auto max-w-7xl px-6 py-4">
-            <div className="relative mb-4">
-              <Search className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search…"
-                className="h-10 w-full rounded-full border border-border bg-secondary/40 ps-10 pe-4 text-sm outline-none"
-              />
-            </div>
             <nav className="flex flex-col gap-1">
+
               {links.map((l) => (
                 <Link
                   key={l.to}

@@ -11,14 +11,15 @@ import { CATALOG, CATEGORIES, IG_URL, MOODBOARD, type Cat } from "@/lib/site-dat
 export const Route = createFileRoute("/gallery")({
   head: () => ({
     meta: [
-      { title: "Gallery — Our Work & Inspiration | Petal & Stem" },
+      { title: "Gallery — Our Work & Inspiration | Moon Bloom" },
       { name: "description", content: "Browse our recent arrangements, seasonal moodboard, and fresh floral inspiration." },
-      { property: "og:title", content: "Gallery — Petal & Stem" },
+      { property: "og:title", content: "Gallery — Moon Bloom" },
       { property: "og:description", content: "Recent arrangements, moodboard and live inspiration." },
     ],
   }),
   component: GalleryPage,
 });
+
 
 function GalleryPage() {
   const { t } = useTranslation();
