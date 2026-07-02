@@ -2,11 +2,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { Instagram, Flower2, Palette, Ruler } from "lucide-react";
+import { Instagram, Minus, Plus, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getFlowers } from "@/lib/flowers.functions";
-import { IG_URL, PALETTES, SIZES } from "@/lib/site-data";
+import { IG_URL } from "@/lib/site-data";
 
 const flowersQuery = queryOptions({
   queryKey: ["flowers"],
@@ -27,162 +27,276 @@ export const Route = createFileRoute("/flowers")({
   component: FlowersPage,
 });
 
+const MODELS = [
+  {
+    key: "open",
+    label: "Open Flower",
+    desc: "Fully bloomed, generous petals.",
+    img: "https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=600&q=80&auto=format",
+  },
+  {
+    key: "closed",
+    label: "Closed Flower",
+    desc: "Tight buds, sculpted silhouette.",
+    img: "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=600&q=80&auto=format",
+  },
+  {
+    key: "plumeria",
+    label: "Plumeria",
+    desc: "Five-petal tropical bloom.",
+    img: "https://images.unsplash.com/photo-1567748157439-651aca2ff064?w=600&q=80&auto=format",
+  },
+  {
+    key: "dahlia",
+    label: "Dahlia",
+    desc: "Geometric, layered showstopper.",
+    img: "https://images.unsplash.com/photo-1606041008023-472dfb5e530f?w=600&q=80&auto=format",
+  },
+] as const;
+
+const COLORS = [
+  { key: "red", label: "Red", hex: "#C0392B" },
+  { key: "white", label: "White", hex: "#F8F5F0" },
+  { key: "blush", label: "Blush", hex: "#E2A79D" },
+  { key: "royal-blue", label: "Royal Blue", hex: "#1F3A93" },
+  { key: "gold", label: "Gold", hex: "#D4AF37" },
+  { key: "sage", label: "Sage", hex: "#8A9A5B" },
+  { key: "black", label: "Black", hex: "#1a1a1a" },
+  { key: "lavender", label: "Lavender", hex: "#B57EDC" },
+] as const;
+
 function FlowersPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const lang = ((i18n.resolvedLanguage ?? "en").slice(0, 2) as "en" | "fr" | "ar");
   const { data } = useSuspenseQuery(flowersQuery);
 
-  const [palette, setPalette] = useState<(typeof PALETTES)[number]["key"]>("pastel");
-  const [focal, setFocal] = useState<string>(data.flowers[0].slug);
-  const [size, setSize] = useState<(typeof SIZES)[number]["key"]>("medium");
-  const paletteObj = useMemo(() => PALETTES.find((p) => p.key === palette)!, [palette]);
-  const focalObj = useMemo(() => data.flowers.find((f) => f.slug === focal) ?? data.flowers[0], [focal, data.flowers]);
-  const sizeObj = useMemo(() => SIZES.find((s) => s.key === size)!, [size]);
+  const [model, setModel] = useState<(typeof MODELS)[number]["key"]>("open");
+  const [qty, setQty] = useState(12);
+  const [color, setColor] = useState<(typeof COLORS)[number]["key"]>("blush");
+  const [copied, setCopied] = useState(false);
+
+  const modelObj = useMemo(() => MODELS.find((m) => m.key === model)!, [model]);
+  const colorObj = useMemo(() => COLORS.find((c) => c.key === color)!, [color]);
+
+  const orderText = `Hi Petal & Stem! 🌸\n\nI'd like to place a custom order:\n• Flower model: ${modelObj.label}\n• Quantity: ${qty} stems\n• Color: ${colorObj.label}\n\nCould you share pricing and lead time? Thank you!`;
+
+  async function handleGenerate() {
+    try {
+      await navigator.clipboard.writeText(orderText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+    window.open(IG_URL, "_blank", "noopener,noreferrer");
+  }
 
   return (
     <div>
       {/* Hero band */}
-      <section className="bg-blush/30 py-20 md:py-28">
+      <section className="bg-blush/30 py-16 md:py-24">
         <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("flowersPage.eyebrow")}</p>
-          <h1 className="font-serif text-4xl md:text-6xl">{t("flowersPage.title")}</h1>
-          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("flowersPage.sub")}</p>
+          <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">Satin & Silk</p>
+          <h1 className="font-serif text-4xl md:text-6xl">Our flower models</h1>
+          <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+            Every bloom we stock — photographed on clean white so you see true color and shape.
+          </p>
         </div>
       </section>
 
-      {/* Flower grid */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
+      {/* Flower grid — catalog style */}
+      <section className="mx-auto max-w-7xl px-6 py-16 md:py-20">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6 lg:grid-cols-4">
           {data.flowers.map((f) => (
-            <Card key={f.slug} className="overflow-hidden border-border/60 bg-background p-0 shadow-none">
-              <div className="aspect-square overflow-hidden">
-                <img src={f.img} alt={f.names[lang]} className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
+            <Card
+              key={f.slug}
+              className="overflow-hidden rounded-md border border-border/70 bg-background p-0 shadow-none transition-shadow hover:shadow-soft"
+            >
+              <div className="aspect-square overflow-hidden bg-white">
+                <img
+                  src={f.img}
+                  alt={f.names[lang]}
+                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                  loading="lazy"
+                />
               </div>
-              <div className="p-4">
-                <h3 className="font-serif text-xl">{f.names[lang]}</h3>
-                <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">
-                  {f.names.en} · {f.season}
+              <div className="border-t border-border/60 p-3 text-center">
+                <h3 className="font-serif text-base leading-tight">{f.names[lang]}</h3>
+                <p className="mt-0.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  {f.names.en}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc[lang]}</p>
               </div>
             </Card>
           ))}
         </div>
       </section>
 
-      {/* Customize studio */}
-      <section id="customize" className="bg-secondary/30 py-24 md:py-32">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-12 text-center">
-            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("custom.eyebrow")}</p>
-            <h2 className="font-serif text-4xl md:text-5xl">{t("custom.title")}</h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">{t("custom.sub")}</p>
+      {/* Build Your Custom Order — 3 step flow */}
+      <section id="build" className="border-t border-border/60 bg-secondary/20 py-20 md:py-28">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="mb-14 text-center">
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">Build Your Custom Order</p>
+            <h2 className="font-serif text-4xl md:text-5xl">Three quick steps</h2>
+            <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+              Pick a model, quantity and color — we'll format your DM for you.
+            </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-5">
-            <div className="md:col-span-2">
-              <Card className="sticky top-24 overflow-hidden border-border/60 bg-background p-0 shadow-soft">
-                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
-                  <img src={paletteObj.img} alt="Palette preview" className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500" />
-                  <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-4 text-white">
-                    <img src={focalObj.img} alt={focalObj.names[lang]} className="size-16 rounded-full border-2 border-white object-cover shadow-soft" />
-                    <div className="flex-1">
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-white/80">{t("custom.preview")}</p>
-                      <p className="font-serif text-lg leading-tight">
-                        {t(`custom.p${palette.charAt(0).toUpperCase()}${palette.slice(1)}`)} · {focalObj.names[lang]}
-                      </p>
-                      <p className="text-xs text-white/85">{t(`custom.${size}`)} · {sizeObj.stems} stems</p>
+          {/* Step 1 */}
+          <StepCard n="01" title="Pick the flower model">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {MODELS.map((m) => {
+                const active = model === m.key;
+                return (
+                  <button
+                    key={m.key}
+                    onClick={() => setModel(m.key)}
+                    className={`overflow-hidden rounded-md border text-start transition-all ${
+                      active
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="aspect-square overflow-hidden bg-white">
+                      <img src={m.img} alt={m.label} className="h-full w-full object-cover" loading="lazy" />
                     </div>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <Button asChild className="w-full rounded-full">
-                    <a href={IG_URL} target="_blank" rel="noopener noreferrer">
-                      <Instagram className="size-4" /> {t("custom.order")}
-                    </a>
-                  </Button>
-                </div>
-              </Card>
+                    <div className="border-t border-border/60 p-3">
+                      <p className="text-sm font-medium">{m.label}</p>
+                      <p className="text-[11px] text-muted-foreground">{m.desc}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
+          </StepCard>
 
-            <div className="space-y-6 md:col-span-3">
-              <Card className="border-border/60 bg-background p-6 shadow-none">
-                <div className="mb-4 flex items-center gap-2">
-                  <Palette className="size-5 text-primary" />
-                  <h3 className="font-serif text-xl">{t("custom.palette")}</h3>
-                </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  {PALETTES.map((p) => (
-                    <button
-                      key={p.key}
-                      onClick={() => setPalette(p.key)}
-                      className={`rounded-lg border p-3 text-start transition-all ${
-                        palette === p.key ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="mb-2 flex gap-1">
-                        {p.swatches.map((c) => (
-                          <span key={c} className="size-5 rounded-full border border-border/50" style={{ background: c }} />
-                        ))}
-                      </div>
-                      <p className="text-sm">{t(`custom.p${p.key.charAt(0).toUpperCase()}${p.key.slice(1)}`)}</p>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-
-              <Card className="border-border/60 bg-background p-6 shadow-none">
-                <div className="mb-4 flex items-center gap-2">
-                  <Flower2 className="size-5 text-primary" />
-                  <h3 className="font-serif text-xl">{t("custom.focal")}</h3>
-                </div>
-                <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
-                  {data.flowers.slice(0, 6).map((f) => (
-                    <button
-                      key={f.slug}
-                      onClick={() => setFocal(f.slug)}
-                      className={`group overflow-hidden rounded-lg border text-start transition-all ${
-                        focal === f.slug ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="aspect-square overflow-hidden">
-                        <img src={f.img} alt={f.names[lang]} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                      </div>
-                      <p className="px-2 py-1.5 text-xs">{f.names[lang]}</p>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-
-              <Card className="border-border/60 bg-background p-6 shadow-none">
-                <div className="mb-4 flex items-center gap-2">
-                  <Ruler className="size-5 text-primary" />
-                  <h3 className="font-serif text-xl">{t("custom.size")}</h3>
-                </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {SIZES.map((s) => (
-                    <button
-                      key={s.key}
-                      onClick={() => setSize(s.key)}
-                      className={`overflow-hidden rounded-lg border text-start transition-all ${
-                        size === s.key ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="aspect-[4/3] overflow-hidden">
-                        <img src={s.img} alt={s.key} className="h-full w-full object-cover" loading="lazy" />
-                      </div>
-                      <div className="p-2">
-                        <p className="text-sm font-medium">{t(`custom.${s.key}`)}</p>
-                        <p className="text-xs text-muted-foreground">{s.stems} · {t(`custom.${s.key}D`)}</p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </Card>
+          {/* Step 2 */}
+          <StepCard n="02" title="Choose the quantity">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:gap-8">
+              <div className="inline-flex items-center rounded-full border border-border bg-background">
+                <button
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="grid size-12 place-items-center rounded-s-full hover:bg-secondary/60"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="size-4" />
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={999}
+                  value={qty}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10);
+                    if (!Number.isNaN(v)) setQty(Math.max(1, Math.min(999, v)));
+                  }}
+                  className="h-12 w-20 border-x border-border bg-transparent text-center font-serif text-2xl outline-none"
+                />
+                <button
+                  onClick={() => setQty((q) => Math.min(999, q + 1))}
+                  className="grid size-12 place-items-center rounded-e-full hover:bg-secondary/60"
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="size-4" />
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[6, 12, 24, 36, 50].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setQty(n)}
+                    className={`rounded-full border px-4 py-1.5 text-xs transition-colors ${
+                      qty === n
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                  >
+                    {n} stems
+                  </button>
+                ))}
+              </div>
             </div>
+          </StepCard>
+
+          {/* Step 3 */}
+          <StepCard n="03" title="Choose the color">
+            <div className="flex flex-wrap items-center gap-4">
+              {COLORS.map((c) => {
+                const active = color === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    onClick={() => setColor(c.key)}
+                    className="group flex flex-col items-center gap-2"
+                    aria-label={c.label}
+                  >
+                    <span
+                      className={`size-11 rounded-full border-2 shadow-sm transition-transform ${
+                        active ? "border-primary ring-2 ring-primary/30 scale-110" : "border-white group-hover:scale-105"
+                      }`}
+                      style={{ background: c.hex }}
+                    />
+                    <span className={`text-[11px] ${active ? "text-foreground" : "text-muted-foreground"}`}>
+                      {c.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </StepCard>
+
+          {/* Summary + CTA */}
+          <div className="mt-10 rounded-md border border-border bg-background p-6 shadow-soft">
+            <p className="mb-3 text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Your order</p>
+            <div className="mb-5 flex flex-wrap items-center gap-x-6 gap-y-2 font-serif text-xl">
+              <span>{modelObj.label}</span>
+              <span className="text-muted-foreground">·</span>
+              <span>{qty} stems</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="inline-flex items-center gap-2">
+                <span className="size-4 rounded-full border border-border" style={{ background: colorObj.hex }} />
+                {colorObj.label}
+              </span>
+            </div>
+            <Button
+              onClick={handleGenerate}
+              size="lg"
+              className="h-12 w-full rounded-full text-sm sm:w-auto sm:px-8"
+            >
+              {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+              {copied ? "Copied — opening Instagram…" : "Generate Order Details for Instagram"}
+            </Button>
+            <p className="mt-3 text-xs italic text-muted-foreground">
+              Clicking this will format your choices so you can easily copy and paste them into our Instagram DMs!
+            </p>
+            <pre className="mt-4 whitespace-pre-wrap rounded-md border border-border/60 bg-secondary/40 p-4 text-xs text-foreground/80">
+{orderText}
+            </pre>
+            <a
+              href={IG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+            >
+              <Instagram className="size-3.5" /> Open Instagram directly
+            </a>
           </div>
         </div>
       </section>
     </div>
+  );
+}
+
+function StepCard({ n, title, children }: { n: string; title: string; children: React.ReactNode }) {
+  return (
+    <Card className="mb-6 border-border/70 bg-background p-6 shadow-none md:p-8">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="grid size-9 place-items-center rounded-full bg-primary text-sm font-medium text-primary-foreground">
+          {n}
+        </span>
+        <h3 className="font-serif text-2xl">{title}</h3>
+      </div>
+      {children}
+    </Card>
   );
 }
