@@ -37,7 +37,7 @@ function Index() {
           <img src={HERO_IMG} alt="Floral arrangement" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50" />
         </div>
-        <div className="relative z-10 mx-auto max-w-3xl px-6 pt-20 text-center text-white">
+        <div className="relative z-10 mx-auto max-w-3xl px-6 py-20 text-center text-white">
           <p className="mb-6 text-xs uppercase tracking-[0.4em] text-white/80">{t("hero.eyebrow")}</p>
           <h1 className="font-serif text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
             {t("hero.title1")}<br />
