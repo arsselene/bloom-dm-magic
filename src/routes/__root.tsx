@@ -14,12 +14,13 @@ import { Instagram } from "lucide-react";
 import "@fontsource/noto-naskh-arabic/400.css";
 import "@fontsource/noto-naskh-arabic/600.css";
 import "../lib/i18n";
-import { RTL_LANGS } from "../lib/i18n";
+import i18n, { RTL_LANGS } from "../lib/i18n";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteNav } from "../components/SiteNav";
 import { SiteFooter } from "../components/SiteFooter";
 import { IG_URL } from "../lib/site-data";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -86,16 +87,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Petal & Stem — Bespoke Floral Studio" },
-      { name: "description", content: "Locally sourced, custom-designed floral arrangements. Order easily via Instagram DM." },
-      { property: "og:title", content: "Petal & Stem — Bespoke Floral Studio" },
-      { property: "og:description", content: "Locally sourced, custom-designed floral arrangements. Order easily via Instagram DM." },
+      { title: "Moon Bloom — Handcrafted Satin Floral Studio" },
+      { name: "description", content: "Handmade satin & ribbon bouquets, made to last. Order easily via Instagram DM." },
+      { property: "og:title", content: "Moon Bloom — Handcrafted Satin Floral Studio" },
+      { property: "og:description", content: "Handmade satin & ribbon bouquets, made to last. Order easily via Instagram DM." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Petal & Stem — Bespoke Floral Studio" },
-      { name: "twitter:description", content: "Locally sourced, custom-designed floral arrangements. Order easily via Instagram DM." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/de0f2d91-e594-429c-9d8c-2f7f5f68f64e/id-preview-3372f50c--33fb2207-539d-40a1-a997-e72fb6394881.lovable.app-1782131929904.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/de0f2d91-e594-429c-9d8c-2f7f5f68f64e/id-preview-3372f50c--33fb2207-539d-40a1-a997-e72fb6394881.lovable.app-1782131929904.png" },
+      { name: "twitter:title", content: "Moon Bloom — Handcrafted Satin Floral Studio" },
+      { name: "twitter:description", content: "Handmade satin & ribbon bouquets, made to last. Order easily via Instagram DM." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -130,14 +129,29 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { i18n } = useTranslation();
+  const { i18n: i18nInstance } = useTranslation();
 
+  // Detect the visitor's language on the client only, AFTER hydration, so
+  // SSR ("en") and the initial client render match. Then apply RTL/dir.
   useEffect(() => {
-    const lng = i18n.resolvedLanguage ?? i18n.language ?? "en";
-    const isRTL = RTL_LANGS.has(lng);
-    document.documentElement.lang = lng;
-    document.documentElement.dir = isRTL ? "rtl" : "ltr";
-  }, [i18n.resolvedLanguage, i18n.language]);
+    const stored = typeof window !== "undefined" ? window.localStorage.getItem("i18nextLng") : null;
+    const nav = typeof navigator !== "undefined" ? navigator.language.slice(0, 2) : "en";
+    const supported = ["en", "fr", "ar"];
+    const wanted = stored && supported.includes(stored) ? stored : supported.includes(nav) ? nav : "en";
+    if (wanted !== i18n.language) void i18n.changeLanguage(wanted);
+    const handler = (lng: string) => {
+      window.localStorage.setItem("i18nextLng", lng);
+      document.documentElement.lang = lng;
+      document.documentElement.dir = RTL_LANGS.has(lng) ? "rtl" : "ltr";
+    };
+    handler(i18n.language ?? "en");
+    i18n.on("languageChanged", handler);
+    return () => i18n.off("languageChanged", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Keep effect deps typechecking happy without changing logic
+  void i18nInstance;
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -159,6 +173,7 @@ function RootComponent() {
         <Instagram className="size-4" />
         <span className="hidden sm:inline">DM us on IG</span>
       </a>
+      <Toaster />
     </QueryClientProvider>
   );
 }
