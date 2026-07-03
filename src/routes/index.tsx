@@ -14,16 +14,15 @@ import { IG_URL } from "@/lib/site-data";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Moon Bloom — Bespoke Floral Studio" },
+      { title: "Petal & Stem — Bespoke Floral Studio" },
       { name: "description", content: "Bespoke blooms, crafted for you. Locally sourced floral arrangements, ordered easily via Instagram DM." },
-      { property: "og:title", content: "Moon Bloom — Bespoke Floral Studio" },
+      { property: "og:title", content: "Petal & Stem — Bespoke Floral Studio" },
       { property: "og:description", content: "Bespoke blooms, crafted for you. Order on Instagram." },
       { property: "og:image", content: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=1200&q=80" },
     ],
   }),
   component: Index,
 });
-
 
 const HERO_IMG = "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=2000&q=80";
 
@@ -33,12 +32,12 @@ function Index() {
   return (
     <div>
       {/* HERO */}
-      <section className="relative flex min-h-[80svh] items-center justify-center overflow-hidden">
+      <section className="relative -mt-[72px] flex min-h-[100svh] items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={HERO_IMG} alt="Floral arrangement" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50" />
         </div>
-        <div className="relative z-10 mx-auto max-w-3xl px-6 py-20 text-center text-white">
+        <div className="relative z-10 mx-auto max-w-3xl px-6 pt-20 text-center text-white">
           <p className="mb-6 text-xs uppercase tracking-[0.4em] text-white/80">{t("hero.eyebrow")}</p>
           <h1 className="font-serif text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
             {t("hero.title1")}<br />

@@ -86,13 +86,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Moon Bloom — Bespoke Floral Studio" },
+      { title: "Petal & Stem — Bespoke Floral Studio" },
       { name: "description", content: "Locally sourced, custom-designed floral arrangements. Order easily via Instagram DM." },
-      { property: "og:title", content: "Moon Bloom — Bespoke Floral Studio" },
+      { property: "og:title", content: "Petal & Stem — Bespoke Floral Studio" },
       { property: "og:description", content: "Locally sourced, custom-designed floral arrangements. Order easily via Instagram DM." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Moon Bloom — Bespoke Floral Studio" },
+      { name: "twitter:title", content: "Petal & Stem — Bespoke Floral Studio" },
       { name: "twitter:description", content: "Locally sourced, custom-designed floral arrangements. Order easily via Instagram DM." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/de0f2d91-e594-429c-9d8c-2f7f5f68f64e/id-preview-3372f50c--33fb2207-539d-40a1-a997-e72fb6394881.lovable.app-1782131929904.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/de0f2d91-e594-429c-9d8c-2f7f5f68f64e/id-preview-3372f50c--33fb2207-539d-40a1-a997-e72fb6394881.lovable.app-1782131929904.png" },
@@ -107,7 +107,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
   }),
-
 
   shellComponent: RootShell,
   component: RootComponent,
