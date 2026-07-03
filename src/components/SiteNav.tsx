@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Languages, Menu, X, Instagram } from "lucide-react";
-import { IG_URL } from "@/lib/site-data";
+import { IG_URL, BRAND } from "@/lib/site-data";
 
 const LANGS = [
   { code: "en", label: "EN" },
@@ -56,7 +56,6 @@ export function SiteNav() {
     { to: "/contact", label: t("nav.contact") },
   ];
 
-  // Transparent over hero on home; solid translucent elsewhere.
   const wrap = isHome
     ? "absolute top-0 z-40 w-full text-white"
     : "sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 text-foreground backdrop-blur";
@@ -69,7 +68,7 @@ export function SiteNav() {
     <header className={wrap}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:py-5">
         <Link to="/" className={`font-serif text-xl italic ${isHome ? "drop-shadow" : ""}`}>
-          Petal &amp; Stem
+          {BRAND}
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm md:flex">

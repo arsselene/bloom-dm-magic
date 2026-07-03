@@ -1,17 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Instagram, Mail, Clock } from "lucide-react";
+import { Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { IG_URL } from "@/lib/site-data";
+import { IG_URL, IG_HANDLE } from "@/lib/site-data";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Petal & Stem" },
-      { name: "description", content: "DM us on Instagram or email hello@petalandstem.co to start your custom bouquet." },
-      { property: "og:title", content: "Contact — Petal & Stem" },
-      { property: "og:description", content: "Let's create something beautiful together." },
+      { title: "Contact — Moon Bloom" },
+      { name: "description", content: "DM Moon Bloom on Instagram to start your custom satin bouquet." },
+      { property: "og:title", content: "Contact — Moon Bloom" },
+      { property: "og:description", content: "Instagram DMs only — the fastest way to reach us." },
     ],
   }),
   component: ContactPage,
@@ -27,37 +26,22 @@ function ContactPage() {
           <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("contact.eyebrow")}</p>
           <h1 className="font-serif text-4xl leading-tight md:text-6xl">{t("contact.title")}</h1>
           <p className="mx-auto mt-6 max-w-xl text-muted-foreground">{t("contact.sub")}</p>
-          <div className="mt-10">
+          <div className="mt-10 flex flex-col items-center gap-4">
             <Button asChild size="lg" className="h-14 rounded-full px-10 text-base shadow-soft">
               <a href={IG_URL} target="_blank" rel="noopener noreferrer">
                 <Instagram className="size-5" /> {t("contact.cta")}
               </a>
             </Button>
+            <a
+              href={IG_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-serif text-xl italic text-primary hover:underline"
+            >
+              {IG_HANDLE}
+            </a>
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("contact.onlyIg")}</p>
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <div className="grid gap-6 md:grid-cols-3">
-          <Card className="border-border/60 bg-background p-8 text-center shadow-none">
-            <Instagram className="mx-auto size-6 text-primary" />
-            <h3 className="mt-4 font-serif text-xl">Instagram</h3>
-            <a href={IG_URL} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-muted-foreground hover:text-primary">
-              @YourFloristIG
-            </a>
-          </Card>
-          <Card className="border-border/60 bg-background p-8 text-center shadow-none">
-            <Mail className="mx-auto size-6 text-primary" />
-            <h3 className="mt-4 font-serif text-xl">{t("contact.email")}</h3>
-            <a href="mailto:hello@petalandstem.co" className="mt-2 inline-block text-sm text-muted-foreground hover:text-primary">
-              hello@petalandstem.co
-            </a>
-          </Card>
-          <Card className="border-border/60 bg-background p-8 text-center shadow-none">
-            <Clock className="mx-auto size-6 text-primary" />
-            <h3 className="mt-4 font-serif text-xl">{t("contact.hours")}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{t("contact.hoursVal")}</p>
-          </Card>
         </div>
       </section>
     </div>

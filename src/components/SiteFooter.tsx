@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Instagram, Heart } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { IG_URL } from "@/lib/site-data";
+import { IG_URL, IG_HANDLE, BRAND } from "@/lib/site-data";
 
 export function SiteFooter() {
   const { t } = useTranslation();
@@ -10,7 +10,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <p className="font-serif text-2xl italic">Petal &amp; Stem</p>
+            <p className="font-serif text-2xl italic">{BRAND}</p>
             <p className="mt-2 text-sm text-muted-foreground">{t("footer.tag")}</p>
           </div>
           <div className="flex flex-col gap-2 text-sm">
@@ -23,13 +23,12 @@ export function SiteFooter() {
           <div className="flex flex-col gap-2 text-sm">
             <p className="mb-1 text-xs uppercase tracking-[0.25em] text-muted-foreground">{t("footer.reach")}</p>
             <a href={IG_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-foreground/80 hover:text-primary">
-              <Instagram className="size-4" /> @YourFloristIG
+              <Instagram className="size-4" /> {IG_HANDLE}
             </a>
-            <a href="mailto:hello@petalandstem.co" className="text-foreground/80 hover:text-primary">hello@petalandstem.co</a>
           </div>
         </div>
         <p className="mt-12 text-center text-xs text-muted-foreground">
-          {t("footer.madeWith")} <Heart className="inline size-3 text-blush-foreground" fill="currentColor" /> © {new Date().getFullYear()} Petal &amp; Stem
+          {t("footer.madeWith")} <Heart className="inline size-3 text-blush-foreground" fill="currentColor" /> © {new Date().getFullYear()} {BRAND}
         </p>
       </div>
     </footer>
