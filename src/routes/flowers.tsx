@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   IG_URL,
-  CUSTOM_PALETTES,
+  AVAILABLE_COLORS,
+  COLOR_SWATCHES,
   FLOWER_TYPES,
   type FlowerTypeKey,
-  type PaletteKey,
 } from "@/lib/site-data";
 
 export const Route = createFileRoute("/flowers")({
@@ -25,28 +25,37 @@ export const Route = createFileRoute("/flowers")({
   component: CustomizePage,
 });
 
+type ColorKey = (typeof AVAILABLE_COLORS)[number];
+
 function CustomizePage() {
   const { t } = useTranslation();
 
   const [type, setType] = useState<FlowerTypeKey | null>(null);
-  const [palette, setPalette] = useState<PaletteKey | null>(null);
+  const [colors, setColors] = useState<ColorKey[]>([]);
   const [count, setCount] = useState(12);
+
+  const toggleColor = (c: ColorKey) => {
+    setColors((prev) =>
+      prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c],
+    );
+  };
 
   const send = () => {
     if (!type) {
       toast.error(t("custom.pickType"));
       return;
     }
-    if (!palette) {
+    if (colors.length === 0) {
       toast.error(t("custom.pickColor"));
       return;
     }
+    const colorNames = colors.map((c) => t(`filters.colors.${c}`)).join(", ");
     const orderText =
       `Hi Moon Bloom! 🌸\n` +
       `I'd like to order a custom bouquet:\n` +
-      `• Flower type: ${t(`custom.types.${type}`)}\n` +
-      `• Colors: ${t(`custom.palettes.${palette}`)}\n` +
-      `• Number of flowers: ${count}`;
+      `• ${t("custom.types." + type)}\n` +
+      `• ${t("custom.colorsLabel")}: ${colorNames}\n` +
+      `• ${t("custom.count")}: ${count}`;
     try {
       void navigator.clipboard?.writeText(orderText);
     } catch {
@@ -98,33 +107,38 @@ function CustomizePage() {
           </div>
         </div>
 
-        {/* Step 2 — Palette */}
+        {/* Step 2 — Colors (multi-select) */}
         <div className="mb-14">
-          <h2 className="mb-6 font-serif text-2xl md:text-3xl">{t("custom.step2")}</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {CUSTOM_PALETTES.map((p) => {
-              const active = palette === p.key;
+          <h2 className="mb-2 font-serif text-2xl md:text-3xl">{t("custom.step2")}</h2>
+          <p className="mb-6 text-sm text-muted-foreground">
+            {colors.length > 0
+              ? colors.map((c) => t(`filters.colors.${c}`)).join(" • ")
+              : "—"}
+          </p>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-7">
+            {AVAILABLE_COLORS.map((c) => {
+              const active = colors.includes(c);
               return (
                 <button
-                  key={p.key}
-                  onClick={() => setPalette(p.key)}
-                  className={`flex items-center justify-between gap-4 rounded-xl border bg-background p-4 text-start transition-all ${
+                  key={c}
+                  type="button"
+                  onClick={() => toggleColor(c)}
+                  className={`group flex flex-col items-center gap-2 rounded-xl border bg-background p-3 transition-all ${
                     active ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"
                   }`}
+                  aria-pressed={active}
                 >
-                  <div>
-                    <p className="text-sm font-medium">{t(`custom.palettes.${p.key}`)}</p>
-                    <div className="mt-2 flex gap-1.5">
-                      {p.swatches.map((c) => (
-                        <span key={c} className="size-6 rounded-full border border-border/50 shadow-sm" style={{ background: c }} />
-                      ))}
-                    </div>
-                  </div>
-                  {active && (
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
-                      <Check className="size-4" />
-                    </span>
-                  )}
+                  <span
+                    className="relative grid size-12 place-items-center rounded-full border border-border/60 shadow-sm"
+                    style={{ background: COLOR_SWATCHES[c] }}
+                  >
+                    {active && (
+                      <Check className="size-5 text-white drop-shadow" strokeWidth={3} />
+                    )}
+                  </span>
+                  <span className="text-xs font-medium text-center">
+                    {t(`filters.colors.${c}`)}
+                  </span>
                 </button>
               );
             })}
@@ -167,12 +181,16 @@ function CustomizePage() {
           <p className="mb-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">{t("custom.summary")}</p>
           <ul className="space-y-1 text-sm">
             <li>
-              <span className="text-muted-foreground">{t("custom.step1").replace(/^Step 1 — |^Étape 1 — |^الخطوة 1 — /, "")}: </span>
+              <span className="text-muted-foreground">{t("filters.type")}: </span>
               <span className="font-medium">{type ? t(`custom.types.${type}`) : "—"}</span>
             </li>
             <li>
-              <span className="text-muted-foreground">{t("custom.step2").replace(/^Step 2 — |^Étape 2 — |^الخطوة 2 — /, "")}: </span>
-              <span className="font-medium">{palette ? t(`custom.palettes.${palette}`) : "—"}</span>
+              <span className="text-muted-foreground">{t("custom.colorsLabel")}: </span>
+              <span className="font-medium">
+                {colors.length > 0
+                  ? colors.map((c) => t(`filters.colors.${c}`)).join(", ")
+                  : "—"}
+              </span>
             </li>
             <li>
               <span className="text-muted-foreground">{t("custom.count")}: </span>
