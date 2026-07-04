@@ -32,12 +32,14 @@ function filenameFromUrl(url: string): string {
 
 function FilterRow<T extends string>({
   label,
+  allLabel,
   options,
   value,
   onChange,
   renderLabel,
 }: {
   label: string;
+  allLabel: string;
   options: readonly T[];
   value: T | typeof ALL;
   onChange: (v: T | typeof ALL) => void;
@@ -60,7 +62,7 @@ function FilterRow<T extends string>({
                   : "border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground"
               }`}
             >
-              {opt === ALL ? "All" : renderLabel ? renderLabel(opt) : opt}
+              {opt === ALL ? allLabel : renderLabel ? renderLabel(opt) : opt}
             </button>
           );
         })}
