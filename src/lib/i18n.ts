@@ -36,6 +36,7 @@ const resources = {
           closedFlower: "Closed Flower",
           plumeria: "Plumeria",
           dahlia: "Dahlia",
+          tulip: "Tulip",
         },
         palettes: {
           classic: "Classic White & Ivory",
@@ -97,6 +98,7 @@ const resources = {
           closedFlower: "Fleur fermée",
           plumeria: "Plumeria",
           dahlia: "Dahlia",
+          tulip: "Tulipe",
         },
         palettes: {
           classic: "Blanc classique & ivoire",
@@ -158,6 +160,7 @@ const resources = {
           closedFlower: "زهرة مغلقة",
           plumeria: "بلوميريا",
           dahlia: "داليا",
+          tulip: "توليب",
         },
         palettes: {
           classic: "أبيض كلاسيكي وعاجي",
