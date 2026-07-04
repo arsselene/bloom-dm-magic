@@ -36,6 +36,7 @@ const resources = {
           closedFlower: "Closed Flower",
           plumeria: "Plumeria",
           dahlia: "Dahlia",
+          tulip: "Tulip",
         },
         palettes: {
           classic: "Classic White & Ivory",
