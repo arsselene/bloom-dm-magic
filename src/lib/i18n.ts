@@ -160,6 +160,7 @@ const resources = {
           closedFlower: "زهرة مغلقة",
           plumeria: "بلوميريا",
           dahlia: "داليا",
+          tulip: "توليب",
         },
         palettes: {
           classic: "أبيض كلاسيكي وعاجي",
