@@ -8,25 +8,6 @@ export const BRAND = "Moon Bloom";
 // Gallery uses uploaded photos exclusively.
 export const GALLERY_IMAGES: string[] = BLOOM_IMAGES;
 
-// Palettes for the "Customize Your Bloom" form.
-export type PaletteKey =
-  | "classic"
-  | "blushRoseGold"
-  | "crimsonMaroon"
-  | "lavenderSage"
-  | "custom";
-
-export const CUSTOM_PALETTES: {
-  key: PaletteKey;
-  swatches: string[];
-}[] = [
-  { key: "classic",        swatches: ["#FFFFFF", "#F6EFE1", "#EADFC8", "#D9C9A6"] },
-  { key: "blushRoseGold",  swatches: ["#F8D7DE", "#F0B7C4", "#E8A6B4", "#C89B7B"] },
-  { key: "crimsonMaroon",  swatches: ["#7A1F2B", "#5B1621", "#3E1017", "#22090D"] },
-  { key: "lavenderSage",   swatches: ["#C9B8E4", "#A891C9", "#B7C9A8", "#7F9B6B"] },
-  { key: "custom",         swatches: ["#F5F0E8", "#E7DFD0", "#CDBFA2", "#9E8E70"] },
-];
-
 // Flower types offered in the custom order form.
 export type FlowerTypeKey = "openFlower" | "closedFlower" | "plumeria" | "dahlia" | "tulip";
 export const FLOWER_TYPES: { key: FlowerTypeKey; img: string }[] = [
@@ -40,18 +21,43 @@ export const FLOWER_TYPES: { key: FlowerTypeKey; img: string }[] = [
 // ---------------------------------------------------------------------------
 // Gallery filter taxonomy
 // ---------------------------------------------------------------------------
-// These are the tags the Gallery page filters against. Keep them short and
-// human-readable — they are shown as-is in the filter buttons.
+// These are the tags the Gallery page filters against and the palette shown
+// in the "Customize your bloom" step 2 multi-select.
 export const AVAILABLE_COLORS = [
   "Red",
   "Pink",
+  "Blush",
+  "Peach",
   "White",
+  "Ivory",
+  "Yellow",
+  "Gold",
   "Blue",
   "Lavender",
+  "Sage",
   "Crimson",
-  "Ivory",
-  "Blush",
+  "Burgundy",
+  "Black",
 ] as const;
+
+// Hex swatches used to render the color chips (kept in one place so both the
+// gallery filter and the flowers customization page stay in sync).
+export const COLOR_SWATCHES: Record<(typeof AVAILABLE_COLORS)[number], string> = {
+  Red:      "#C0392B",
+  Pink:     "#F0B7C4",
+  Blush:    "#F8D7DE",
+  Peach:    "#F6C6A0",
+  White:    "#FFFFFF",
+  Ivory:    "#F6EFE1",
+  Yellow:   "#F1D06A",
+  Gold:     "#C9A24A",
+  Blue:     "#6C8EBF",
+  Lavender: "#C9B8E4",
+  Sage:     "#B7C9A8",
+  Crimson:  "#7A1F2B",
+  Burgundy: "#5B1621",
+  Black:    "#1A1A1A",
+};
 
 export const AVAILABLE_TYPES = [
   "openFlower",
