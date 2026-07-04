@@ -114,35 +114,40 @@ function GalleryPage() {
         <div className="rounded-2xl border border-border/60 bg-background/60 p-6 shadow-none backdrop-blur">
           <div className="grid gap-6 md:grid-cols-3">
             <FilterRow
-              label="Color"
+              label={t("filters.color")}
+              allLabel={t("filters.all")}
               options={AVAILABLE_COLORS}
               value={color}
               onChange={setColor}
+              renderLabel={(v) => t(`filters.colors.${v}`)}
             />
             <FilterRow
-              label="Type"
+              label={t("filters.type")}
+              allLabel={t("filters.all")}
               options={AVAILABLE_TYPES}
               value={type}
               onChange={setType}
               renderLabel={(v) => t(`custom.types.${v}`)}
             />
             <FilterRow
-              label="Occasion"
+              label={t("filters.occasion")}
+              allLabel={t("filters.all")}
               options={AVAILABLE_OCCASIONS}
               value={occasion}
               onChange={setOccasion}
+              renderLabel={(v) => t(`filters.occasions.${v}`)}
             />
           </div>
           <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
             <span>
-              {filtered.length} / {GALLERY_IMAGES.length} bouquets
+              {t("filters.count", { n: filtered.length, m: GALLERY_IMAGES.length })}
             </span>
             {anyFilterActive && (
               <button
                 onClick={clearAll}
                 className="rounded-full border border-border px-3 py-1 text-xs font-medium hover:border-primary hover:text-foreground"
               >
-                Clear filters
+                {t("filters.clear")}
               </button>
             )}
           </div>
@@ -153,7 +158,7 @@ function GalleryPage() {
       <section id="masonry" className="mx-auto max-w-7xl px-6 py-12 md:py-16">
         {filtered.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border/60 py-20 text-center text-sm text-muted-foreground">
-            No bouquets match these filters yet.
+            {t("filters.empty")}
           </div>
         ) : (
           <div className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4">
