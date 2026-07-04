@@ -28,10 +28,58 @@ export const CUSTOM_PALETTES: {
 ];
 
 // Flower types offered in the custom order form.
-export type FlowerTypeKey = "openFlower" | "closedFlower" | "plumeria" | "dahlia";
+export type FlowerTypeKey = "openFlower" | "closedFlower" | "plumeria" | "dahlia" | "tulip";
 export const FLOWER_TYPES: { key: FlowerTypeKey; img: string }[] = [
   { key: "openFlower",   img: BLOOM_IMAGES[7]  },
   { key: "closedFlower", img: BLOOM_IMAGES[12] },
   { key: "plumeria",     img: BLOOM_IMAGES[18] },
   { key: "dahlia",       img: BLOOM_IMAGES[5]  },
+  { key: "tulip",        img: BLOOM_IMAGES[2]  },
 ];
+
+// ---------------------------------------------------------------------------
+// Gallery filter taxonomy
+// ---------------------------------------------------------------------------
+// These are the tags the Gallery page filters against. Keep them short and
+// human-readable — they are shown as-is in the filter buttons.
+export const AVAILABLE_COLORS = [
+  "Red",
+  "Pink",
+  "White",
+  "Blue",
+  "Lavender",
+  "Crimson",
+  "Ivory",
+  "Blush",
+] as const;
+
+export const AVAILABLE_TYPES = [
+  "openFlower",
+  "closedFlower",
+  "plumeria",
+  "dahlia",
+  "tulip",
+] as const;
+
+export const AVAILABLE_OCCASIONS = [
+  "Wedding",
+  "Soutenance",
+  "Gift",
+  "Birthday",
+  "Anniversary",
+] as const;
+
+export type ImageMeta = {
+  color?: (typeof AVAILABLE_COLORS)[number];
+  type?: (typeof AVAILABLE_TYPES)[number];
+  occasion?: (typeof AVAILABLE_OCCASIONS)[number];
+};
+
+// Map local filenames (as they appear in src/assets/bloom/) to their tags.
+// Any image NOT listed here still shows when all filters are "All" — just add
+// a new line as you categorize each photo.
+export const IMAGE_METADATA: Record<string, ImageMeta> = {
+  "bloom-01.jpg": { color: "Ivory",    type: "openFlower",   occasion: "Wedding" },
+  // "bloom-02.jpg": { color: "Blue", type: "dahlia", occasion: "Soutenance" },
+  // Fill the rest in manually — the gallery reads this file directly.
+};
